@@ -75,6 +75,55 @@ body {
     background: linear-gradient(135deg, #67e8f9 0%, #22d3ee 100%);
 }
 
+.volume-controls {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.volume-control label {
+    color: #fff;
+    font-size: 1.2rem;
+    min-width: 100px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.volume-control input[type="range"] {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.volume-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffd700;
+    cursor: pointer;
+}
+
+.volume-control span {
+    color: #ffd700;
+    font-size: 1rem;
+    min-width: 50px;
+    text-align: left;
+}
+
 .rules-link {
     margin-top: 30px;
 }
@@ -91,6 +140,170 @@ body {
 
 .rules-link a:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+#plant-select-screen {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+#plant-select-screen h1 {
+    color: #fff;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+#plant-select-screen p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+#available-plants {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 30px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.plant-select-card {
+    width: 80px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.plant-select-card:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.plant-select-card.selected {
+    border: 2px solid #ffd700;
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.plant-select-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.plant-select-card.disabled:hover {
+    transform: scale(1);
+}
+
+.plant-select-card .plant-icon {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
+.plant-select-card .plant-cost {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+#selected-plants-preview {
+    margin-bottom: 30px;
+}
+
+#selected-plants-preview h3 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+#selected-plants-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.selected-plant-preview {
+    width: 70px;
+    height: 80px;
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.selected-plant-preview .plant-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 3px;
+}
+
+.selected-plant-preview .plant-cost {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.selected-plant-preview .remove-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background: red;
+    border-radius: 50%;
+    color: white;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+#confirm-plant-btn {
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 215, 0, 0.8);
+    color: #1a1a2e;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+#confirm-plant-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+#confirm-plant-btn:disabled {
+    background: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
 }
 
 #game-area {
@@ -206,6 +419,20 @@ body {
     object-fit: contain;
 }
 
+.plant-card[data-plant="firePea"] .plant-icon {
+    width: 100px;
+    height: 100px;
+    margin: -25px auto;
+    display: block;
+}
+
+.plant-card[data-plant="threepeater"] .plant-icon,
+.plant-card[data-plant="gloomShroom"] .plant-icon,
+.plant-select-card[data-plant="threepeater"] .plant-icon,
+.plant-select-card[data-plant="gloomShroom"] .plant-icon {
+    object-fit: contain;
+}
+
 .plant-cost {
     font-size: 1.2rem;
     font-weight: bold;
@@ -273,6 +500,46 @@ body {
     left: 0;
 }
 
+.plant-in-cell.fire-pea {
+    width: 120%;
+    height: 120%;
+    transform: translate(-10%, -10%);
+}
+
+.plant-in-cell.threepeater {
+    transform: scale(1.05);
+}
+
+.plant-in-cell.gloomShroom {
+    transform: scale(1.08);
+}
+
+.plant-in-cell.gloomShroom.attacking {
+    animation: gloomAttack 0.45s ease-out;
+}
+
+@keyframes gloomAttack {
+    0%, 100% { transform: scale(1.08); }
+    50% { transform: scale(1.2); }
+}
+
+.gloom-pulse {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border: 3px solid rgba(180, 90, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(180, 90, 255, 0.7);
+    pointer-events: none;
+    z-index: 7;
+    animation: gloomPulse 0.45s ease-out forwards;
+}
+
+@keyframes gloomPulse {
+    0% { transform: scale(0.45); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 0; }
+}
+
 .lawnmower-row {
     position: absolute;
     left: 0;
@@ -310,10 +577,11 @@ body {
 
 .zombie {
     position: absolute;
-    width: 100px;
-    height: 120px;
+    width: 140px;
+    height: 168px;
     z-index: 5;
     transition: left 0.1s linear;
+    pointer-events: none;
 }
 
 .zombie img {
@@ -333,18 +601,21 @@ body {
 .projectile.pea {
     background: #22c55e;
     border-radius: 50%;
+    animation: peaPulse 0.2s ease-in-out infinite;
 }
 
 .projectile.icePea {
     background: #67e8f9;
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(103, 232, 249, 0.5);
+    animation: iceGlow 0.3s ease-in-out infinite;
 }
 
 .projectile.firePea {
     background: #ef4444;
     border-radius: 50%;
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+    animation: fireGlow 0.2s ease-in-out infinite;
 }
 
 .projectile.melon {
@@ -352,21 +623,30 @@ body {
     border-radius: 50%;
     width: 30px;
     height: 30px;
+    animation: melonSpin 0.3s linear infinite;
 }
 
-.sun-item {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    z-index: 15;
-    animation: sunFall 5s ease-in forwards;
-    cursor: pointer;
+@keyframes peaPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
-@keyframes sunFall {
-    0% { transform: translateY(-100px); opacity: 1; }
-    100% { transform: translateY(100vh); opacity: 0; }
+@keyframes iceGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(103, 232, 249, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(103, 232, 249, 0.8); }
 }
+
+@keyframes fireGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+    50% { box-shadow: 0 0 25px rgba(239, 68, 68, 1); }
+}
+
+@keyframes melonSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
 
 #game-over, #pause-overlay {
     position: absolute;
@@ -455,6 +735,7 @@ body {
     background: #fb923c;
     border-radius: 50% 0 50% 50%;
     animation: leafFall 10s linear infinite;
+    pointer-events: none;
 }
 
 @keyframes leafFall {
@@ -475,6 +756,7 @@ body {
     background: #fff;
     border-radius: 50%;
     animation: snowFall 8s linear infinite;
+    pointer-events: none;
 }
 
 @keyframes snowFall {
@@ -548,6 +830,7 @@ body {
     height: 20px;
     background: linear-gradient(to bottom, transparent, rgba(174, 194, 224, 0.8));
     animation: rainFall 0.5s linear infinite;
+    pointer-events: none;
 }
 
 @keyframes rainFall {
@@ -644,9 +927,9 @@ body {
 
 .sun-item {
     position: absolute;
-    width: 50px;
-    height: 50px;
-    z-index: 15;
+    width: 112px;
+    height: 112px;
+    z-index: 9999;
     cursor: pointer;
     transition: transform 0.2s ease;
 }

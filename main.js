@@ -1,13 +1,108 @@
 let selectedPlant = null;
 let shovelMode = false;
+let selectedPlants = [];
+let currentSeason = null;
 
 function startGame(season) {
+    currentSeason = season;
+    selectedPlants = [];
+    
+    document.getElementById('game-menu').classList.add('hidden');
+    document.getElementById('plant-select-screen').classList.remove('hidden');
+    document.getElementById('game-area').classList.add('hidden');
+    
+    updateSelectedPlantsPreview();
+}
+
+function togglePlantSelection(plantType) {
+    audioManager.playClick();
+    const index = selectedPlants.indexOf(plantType);
+    
+    if (index > -1) {
+        selectedPlants.splice(index, 1);
+    } else {
+        if (selectedPlants.length >= 6) {
+            return;
+        }
+        selectedPlants.push(plantType);
+    }
+    
+    updateSelectedPlantsPreview();
+}
+
+function updateSelectedPlantsPreview() {
+    const cards = document.querySelectorAll('.plant-select-card');
+    cards.forEach(card => {
+        const plantType = card.dataset.plant;
+        card.classList.toggle('selected', selectedPlants.includes(plantType));
+        card.classList.toggle('disabled', !selectedPlants.includes(plantType) && selectedPlants.length >= 6);
+    });
+    
+    document.getElementById('selected-count').textContent = selectedPlants.length;
+    
+    const list = document.getElementById('selected-plants-list');
+    list.innerHTML = '';
+    
+    selectedPlants.forEach((plantType, index) => {
+        const config = Plant.getConfig(plantType);
+        const item = document.createElement('div');
+        item.className = 'selected-plant-preview';
+        item.innerHTML = `
+            <img src="${config.image}" class="plant-icon">
+            <span class="plant-cost">${config.cost}</span>
+            <span class="remove-btn" onclick="removeSelectedPlant(${index})">×</span>
+        `;
+        list.appendChild(item);
+    });
+    
+    const confirmBtn = document.getElementById('confirm-plant-btn');
+    confirmBtn.disabled = selectedPlants.length === 0;
+}
+
+function removeSelectedPlant(index) {
+    audioManager.playClick();
+    selectedPlants.splice(index, 1);
+    updateSelectedPlantsPreview();
+}
+
+function confirmPlantSelection() {
+    if (selectedPlants.length === 0) return;
+    
+    audioManager.playClick();
+    audioManager.startBGM('day');
+    
+    document.getElementById('plant-select-screen').classList.add('hidden');
+    document.getElementById('game-area').classList.remove('hidden');
+    
     game = new Game();
-    game.startGame(season);
-    SeasonEffects.applySeasonEffects(season);
-    SeasonEffects.createSeasonOverlay(season);
+    game.selectedPlants = [...selectedPlants];
+    game.startGame(currentSeason);
+    SeasonEffects.applySeasonEffects(currentSeason);
+    SeasonEffects.createSeasonOverlay(currentSeason);
     shovelMode = false;
     updateShovelUI();
+    
+    updatePlantSelector();
+}
+
+function updatePlantSelector() {
+    const selector = document.getElementById('plant-selector');
+    const allCards = selector.querySelectorAll('.plant-card');
+    allCards.forEach(card => card.remove());
+    
+    selectedPlants.forEach(plantType => {
+        const config = Plant.getConfig(plantType);
+        const card = document.createElement('div');
+        card.className = 'plant-card';
+        card.dataset.plant = plantType;
+        card.onclick = () => selectPlant(plantType);
+        card.innerHTML = `
+            <img src="${config.image}" class="plant-icon">
+            <span class="plant-cost">${config.cost}</span>
+            <div class="plant-cooldown" id="cd-${plantType}"></div>
+        `;
+        selector.appendChild(card);
+    });
 }
 
 function selectPlant(plantType) {
@@ -16,6 +111,7 @@ function selectPlant(plantType) {
         return;
     }
 
+    audioManager.playClick();
     shovelMode = false;
     updateShovelUI();
     
@@ -74,6 +170,31 @@ function backToMenu() {
     if (game) {
         game.backToMenu();
     }
+}
+
+function restartGame() {
+    if (game) {
+        selectedPlant = null;
+        shovelMode = false;
+        updateShovelUI();
+        const cards = document.querySelectorAll('.plant-card');
+        cards.forEach(card => card.classList.remove('selected'));
+        game.restartWithSelectedPlants();
+    }
+}
+
+function updateBGMVolume(val) {
+    audioManager.setBGMVolume(val / 100);
+    document.getElementById('bgmVolumeValue').textContent = val + '%';
+    document.getElementById('pauseBGMVolumeValue').textContent = val + '%';
+    document.getElementById('pauseBGMVolume').value = val;
+}
+
+function updateSFXVolume(val) {
+    audioManager.setSFXVolume(val / 100);
+    document.getElementById('sfxVolumeValue').textContent = val + '%';
+    document.getElementById('pauseSFXVolumeValue').textContent = val + '%';
+    document.getElementById('pauseSFXVolume').value = val;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

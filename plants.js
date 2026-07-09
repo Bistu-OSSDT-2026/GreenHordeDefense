@@ -4,54 +4,64 @@ class Plant {
             cost: 50,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 7500,
+            attackCooldown: 15000,
             type: 'sun',
-            image: '95版/reanim/SunFlower_head.png'
+            image: '图片和动画素材/向日葵.gif'
         },
         peaShooter: {
             cost: 100,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
-            image: '95版/reanim/PeaShooter_Head.png'
+            image: '图片和动画素材/豌豆射手.gif'
         },
         icePea: {
-            cost: 100,
+            cost: 175,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             projectileType: 'icePea',
-            image: '95版/reanim/SnowPea_head.png'
+            image: '图片和动画素材/寒冰射手.gif'
         },
         doublePea: {
             cost: 200,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             doubleShot: true,
-            image: '95版/reanim/ThreePeater_head.png'
+            image: '图片和动画素材/双发射手.gif'
+        },
+        threepeater: {
+            cost: 325,
+            cooldown: 7.5,
+            health: 100,
+            attackCooldown: 2800,
+            damage: 20,
+            type: 'shooter',
+            projectileType: 'pea',
+            image: 'assets/plants/threepeater.gif'
         },
         firePea: {
             cost: 175,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             projectileType: 'firePea',
-            image: '95版/reanim/PeaShooter_Head.png'
+            image: '图片和动画素材/火焰豌豆射手.gif'
         },
         melonPult: {
             cost: 300,
             cooldown: 10,
             health: 100,
-            attackCooldown: 2500,
+            attackCooldown: 5000,
             damage: 80,
             type: 'thrower',
             projectileType: 'melon',
@@ -64,7 +74,7 @@ class Plant {
             damage: 1800,
             type: 'ash',
             explodeDelay: 1400,
-            image: '95版/reanim/CherryBomb_left1.png'
+            image: '图片和动画素材/樱桃炸弹.gif'
         },
         jalapeno: {
             cost: 125,
@@ -73,7 +83,7 @@ class Plant {
             damage: 1800,
             type: 'ash',
             explodeDelay: 1400,
-            image: '95版/reanim/Jalapeno_body.png'
+            image: '图片和动画素材/火爆辣椒.gif'
         },
         wallnut: {
             cost: 50,
@@ -81,7 +91,7 @@ class Plant {
             health: 60,
             type: 'defense',
             maxHealth: 60,
-            image: '95版/reanim/Wallnut_body.png'
+            image: '图片和动画素材/坚果.png'
         },
         squash: {
             cost: 50,
@@ -89,7 +99,7 @@ class Plant {
             health: 100,
             damage: 1800,
             type: 'melee',
-            image: '95版/reanim/Squash_body.png'
+            image: '图片和动画素材/窝瓜.gif'
         },
         doomShroom: {
             cost: 125,
@@ -104,7 +114,7 @@ class Plant {
             cost: 25,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 15000,
+            attackCooldown: 30000,
             type: 'sun',
             grows: true,
             growthTime: 20000,
@@ -114,10 +124,20 @@ class Plant {
             cost: 0,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             image: '95版/reanim/PuffShroom_head.png'
+        },
+        gloomShroom: {
+            cost: 150,
+            cooldown: 7.5,
+            health: 100,
+            attackCooldown: 1200,
+            damage: 30,
+            range: 130,
+            type: 'aoe',
+            image: 'assets/plants/gloomShroom.gif'
         },
         iceShroom: {
             cost: 75,
@@ -177,7 +197,10 @@ class Plant {
                 cells[this.col].classList.add('has-plant');
                 
                 this.element = document.createElement('img');
-                this.element.className = 'plant-in-cell';
+                this.element.className = `plant-in-cell ${this.type}`;
+                if (this.type === 'firePea') {
+                    this.element.classList.add('fire-pea');
+                }
                 this.element.src = this.config.image;
                 this.element.id = `plant-${this.id}`;
                 
@@ -213,6 +236,13 @@ class Plant {
             }
         }
 
+        if (this.config.type === 'aoe') {
+            this.attackCooldown -= deltaTime;
+            if (this.attackCooldown <= 0) {
+                this.attackArea(game);
+            }
+        }
+
         if (this.config.type === 'sun') {
             this.attackCooldown -= deltaTime;
             if (this.attackCooldown <= 0) {
@@ -221,8 +251,18 @@ class Plant {
             }
         }
 
-        if (this.config.type === 'ash' && !this.exploding) {
-            this.checkExplode(game);
+        if (this.config.type === 'ash') {
+            if (!this.exploding) {
+                this.exploding = true;
+                this.explodeTimer = this.config.explodeDelay;
+                if (this.element) {
+                    this.element.classList.add('exploding');
+                }
+            }
+            this.explodeTimer -= deltaTime;
+            if (this.explodeTimer <= 0) {
+                this.explode(game);
+            }
         }
 
         if (this.type === 'squash') {
@@ -230,7 +270,12 @@ class Plant {
         }
 
         if (this.type === 'iceShroom') {
-            this.freezeAll(game);
+            if (!this.frozen) {
+                this.frozen = true;
+                setTimeout(() => {
+                    this.freezeAll(game);
+                }, 1400);
+            }
         }
     }
 
@@ -239,6 +284,11 @@ class Plant {
         
         if (rules.shooterAccuracy !== undefined && Math.random() > rules.shooterAccuracy) {
             this.attackCooldown = this.config.attackCooldown;
+            return;
+        }
+
+        if (this.type === 'threepeater') {
+            this.attackThreepeater(game);
             return;
         }
 
@@ -260,6 +310,7 @@ class Plant {
         const projectile = new Projectile(projectileType, this.x, this.y, this.row, damage, this.type);
         game.projectiles.push(projectile);
         projectile.createElement();
+        audioManager.playPlantShoot();
 
         if (this.config.doubleShot) {
             setTimeout(() => {
@@ -272,8 +323,101 @@ class Plant {
         this.attackCooldown = this.config.attackCooldown;
     }
 
+    attackThreepeater(game) {
+        const rows = this.getThreepeaterRows();
+        const hasTarget = game.zombies.some(zombie =>
+            rows.includes(zombie.row) && zombie.x > this.x
+        );
+
+        if (!hasTarget) {
+            this.attackCooldown = 100;
+            return;
+        }
+
+        let damage = this.config.damage;
+        if (game.weather === 'rain') {
+            damage *= 1.2;
+        }
+
+        for (const row of rows) {
+            const projectile = new Projectile(
+                'pea',
+                this.x,
+                this.getRowProjectileY(row),
+                row,
+                damage,
+                this.type
+            );
+            game.projectiles.push(projectile);
+            projectile.createElement();
+        }
+
+        audioManager.playPlantShoot();
+        this.attackCooldown = this.config.attackCooldown;
+    }
+
+    getThreepeaterRows() {
+        const rowCount = document.getElementById('lawn')?.getElementsByClassName('row').length || 5;
+        return [this.row - 1, this.row, this.row + 1]
+            .filter(row => row >= 0 && row < rowCount);
+    }
+
+    getRowProjectileY(row) {
+        const lawn = document.getElementById('lawn');
+        const rows = lawn?.getElementsByClassName('row');
+        const cells = rows?.[row]?.getElementsByClassName('cell');
+        const cell = cells?.[this.col];
+        if (!cell) return this.y;
+
+        const rect = cell.getBoundingClientRect();
+        const containerRect = document.getElementById('lawn-container').getBoundingClientRect();
+        return rect.top - containerRect.top + rect.height / 2;
+    }
+
+    attackArea(game) {
+        const range = this.config.range || 130;
+        const targets = game.zombies.filter(zombie =>
+            Math.abs(zombie.row - this.row) <= 1 &&
+            Math.abs(zombie.x - this.x) <= range
+        );
+
+        if (targets.length === 0) {
+            this.attackCooldown = 100;
+            return;
+        }
+
+        for (const zombie of targets) {
+            zombie.takeDamage(this.config.damage);
+        }
+
+        this.showGloomPulse();
+        this.attackCooldown = this.config.attackCooldown;
+    }
+
+    showGloomPulse() {
+        const container = document.getElementById('lawn-container');
+        if (!container) return;
+
+        const pulse = document.createElement('div');
+        pulse.className = 'gloom-pulse';
+        pulse.style.left = `${this.x - 70}px`;
+        pulse.style.top = `${this.y - 70}px`;
+        container.appendChild(pulse);
+
+        if (this.element) {
+            this.element.classList.add('attacking');
+            setTimeout(() => this.element?.classList.remove('attacking'), 450);
+        }
+        setTimeout(() => pulse.remove(), 450);
+    }
+
     findTarget(game) {
-        const zombiesInRow = game.zombies.filter(z => z.row === this.row && z.x > this.x);
+        const lawnWidth = document.getElementById('lawn-container').clientWidth;
+        const zombiesInRow = game.zombies.filter(z => 
+            z.row === this.row && 
+            z.x > this.x && 
+            z.x < lawnWidth + 50
+        );
         if (zombiesInRow.length === 0) return null;
         return zombiesInRow.reduce((closest, z) => z.x < closest.x ? z : closest);
     }
@@ -302,37 +446,21 @@ class Plant {
     }
 
     checkSquash(game) {
-        if (this.targetZombie) {
-            if (this.targetZombie.health <= 0) {
-                this.targetZombie = null;
-                this.destroy();
-                return;
-            }
-            
-            const distance = Math.abs(this.targetZombie.x - this.x);
-            if (distance > 80) {
-                this.targetZombie = null;
-                return;
-            }
-
-            this.performSquash(game);
-            return;
-        }
-
+        const cellWidth = 100;
         const zombiesInRow = game.zombies.filter(z => 
             z.row === this.row && 
-            Math.abs(z.x - this.x) < 100
+            Math.abs(z.x - this.x) < cellWidth * 1.5
         );
 
         if (zombiesInRow.length > 0) {
-            this.targetZombie = zombiesInRow[0];
+            this.performSquash(game, zombiesInRow);
         }
     }
 
-    performSquash(game) {
-        if (!this.targetZombie) return;
-
-        this.targetZombie.takeDamage(this.config.damage);
+    performSquash(game, zombies) {
+        for (const zombie of zombies) {
+            zombie.takeDamage(this.config.damage);
+        }
         
         const explosion = document.createElement('div');
         explosion.className = 'explosion';
@@ -346,6 +474,8 @@ class Plant {
     }
 
     explode(game) {
+        audioManager.playExplosion();
+        
         const explosion = document.createElement('div');
         explosion.className = 'explosion';
         explosion.style.left = `${this.x - 50}px`;
@@ -361,6 +491,7 @@ class Plant {
         }
         
         if (this.type === 'jalapeno') {
+            this.createJalapenoFire(game);
             for (const zombie of game.zombies) {
                 if (zombie.row === this.row) {
                     zombie.wasBurned = true;
@@ -368,21 +499,56 @@ class Plant {
                 }
             }
         } else if (this.type === 'doomShroom') {
-            const range = 200;
+            const cellWidth = 100;
+            const cellHeight = 100;
+            const rangeX = cellWidth * 4;
+            const rangeY = cellHeight * 4;
             for (const zombie of game.zombies) {
-                const dx = zombie.x - this.x;
-                const dy = zombie.y - this.y;
-                if (Math.sqrt(dx * dx + dy * dy) < range) {
+                const dx = Math.abs(zombie.x - this.x);
+                const dy = Math.abs(zombie.y - this.y);
+                if (dx <= rangeX && dy <= rangeY) {
+                    zombie.wasBurned = true;
+                    zombie.takeDamage(damage);
+                }
+            }
+        } else if (this.type === 'cherryBomb') {
+            const lawn = document.getElementById('lawn');
+            const containerRect = document.getElementById('lawn-container').getBoundingClientRect();
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            
+            for (let r = this.row - 1; r <= this.row + 1; r++) {
+                for (let c = this.col - 1; c <= this.col + 1; c++) {
+                    if (r >= 0 && r < 5 && c >= 0 && c < 9) {
+                        const rows = lawn.getElementsByClassName('row');
+                        if (rows[r]) {
+                            const cells = rows[r].getElementsByClassName('cell');
+                            if (cells[c]) {
+                                const rect = cells[c].getBoundingClientRect();
+                                minX = Math.min(minX, rect.left - containerRect.left);
+                                maxX = Math.max(maxX, rect.right - containerRect.left);
+                                minY = Math.min(minY, rect.top - containerRect.top);
+                                maxY = Math.max(maxY, rect.bottom - containerRect.top);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            for (const zombie of game.zombies) {
+                if (zombie.x >= minX && zombie.x <= maxX && zombie.y >= minY && zombie.y <= maxY) {
                     zombie.wasBurned = true;
                     zombie.takeDamage(damage);
                 }
             }
         } else {
-            const range = 120;
+            const cellWidth = 100;
+            const cellHeight = 100;
+            const rangeX = cellWidth * 1.5;
+            const rangeY = cellHeight * 1.5;
             for (const zombie of game.zombies) {
-                const dx = zombie.x - this.x;
-                const dy = zombie.y - this.y;
-                if (Math.sqrt(dx * dx + dy * dy) < range) {
+                const dx = Math.abs(zombie.x - this.x);
+                const dy = Math.abs(zombie.y - this.y);
+                if (dx <= rangeX && dy <= rangeY) {
                     zombie.wasBurned = true;
                     zombie.takeDamage(damage);
                 }
@@ -392,10 +558,35 @@ class Plant {
         this.destroy();
     }
 
+    createJalapenoFire(game) {
+        const container = document.getElementById('lawn-container');
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+        const rowHeight = containerHeight / 5;
+        const rowTop = this.row * rowHeight;
+        
+        for (let x = 0; x < containerWidth; x += 40) {
+            const fire = document.createElement('img');
+            fire.src = '图片和动画素材/火爆辣椒火焰.gif';
+            fire.style.position = 'absolute';
+            fire.style.left = `${x}px`;
+            fire.style.top = `${rowTop}px`;
+            fire.style.width = '60px';
+            fire.style.height = '80px';
+            fire.style.objectFit = 'contain';
+            fire.style.zIndex = '10';
+            fire.style.pointerEvents = 'none';
+            container.appendChild(fire);
+            
+            setTimeout(() => fire.remove(), 1500);
+        }
+    }
+
     freezeAll(game) {
         for (const zombie of game.zombies) {
             zombie.slowed = true;
-            zombie.slowTimer = 5000;
+            zombie.frozen = true;
+            zombie.slowTimer = 6000;
         }
         this.destroy();
     }
@@ -443,9 +634,19 @@ class Projectile {
         this.row = row;
         this.damage = damage;
         this.plantType = plantType;
-        this.speed = type === 'melon' ? 8 : 15;
+        this.speed = type === 'melon' ? 6 : 12;
         this.id = Date.now() + Math.random();
         this.element = null;
+        this.imagePath = this.getImagePath();
+    }
+
+    getImagePath() {
+        switch (this.type) {
+            case 'melon':
+                return '95版/reanim/WinterMelon_projectile.png';
+            default:
+                return '';
+        }
     }
 
     createElement() {
@@ -454,16 +655,25 @@ class Projectile {
         this.element.id = `proj-${this.id}`;
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
+        
+        if (this.imagePath) {
+            this.element.innerHTML = `<img src="${this.imagePath}" style="width:100%;height:100%;object-fit:contain;">`;
+        }
+        
         document.getElementById('lawn-container').appendChild(this.element);
     }
 
     update(deltaTime) {
         this.x += this.speed;
+        if (this.type === 'melon') {
+            this.y += 0.3;
+        }
     }
 
     render() {
         if (this.element) {
             this.element.style.left = `${this.x}px`;
+            this.element.style.top = `${this.y}px`;
         }
     }
 }

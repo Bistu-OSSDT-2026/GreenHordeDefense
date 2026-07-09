@@ -1,11 +1,13 @@
 const PLANT_TYPES = {
-    ASH: ['cherryBomb', 'jalapeno', 'doomShroom', 'potatoMine', 'squash'],
-    SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom'],
+    ASH: ['cherryBomb', 'jalapeno', 'doomShroom', 'potatoMine'],
+    SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom', 'threepeater'],
     THROWER: ['melonPult'],
     FIRE: ['firePea', 'jalapeno'],
     ICE: ['icePea', 'iceShroom'],
     SUN: ['sunflower', 'sunShroom'],
-    DEFENSE: ['wallnut']
+    DEFENSE: ['wallnut'],
+    MELEE: ['squash'],
+    AOE: ['gloomShroom']
 };
 
 const GAME_STATES = {
@@ -26,9 +28,9 @@ const SEASON_RULES = {
     },
     summer: {
         name: '夏天',
-        fireDamageMultiplier: 1.5,
-        zombieAttackSpeedMultiplier: 1.2,
-        zombieMoveSpeedMultiplier: 1.0
+        fireDamageMultiplier: 2.0,
+        zombieAttackSpeedMultiplier: 2.0,
+        zombieMoveSpeedMultiplier: 2.0
     },
     autumn: {
         name: '秋天',
@@ -61,7 +63,7 @@ class Game {
         this.score = 0;
         this.selectedPlant = null;
         this.lastSunDrop = 0;
-        this.sunDropInterval = 7500;
+        this.sunDropInterval = 10000;
         this.waveTimer = 0;
         this.waveDelay = 15000;
         this.gameLoop = null;
@@ -92,7 +94,6 @@ class Game {
         
         this.updateUI();
         this.showSeasonEffect(season);
-        this.startWave();
         this.startGameLoop();
     }
 
@@ -121,7 +122,6 @@ class Game {
         this.updateSunItems(deltaTime);
         this.checkWaveTransition();
         this.checkGameOver();
-        this.updateCooldowns(deltaTime);
     }
 
     updateSunDrop() {
@@ -154,7 +154,7 @@ class Game {
         sunElement.style.left = `${x}px`;
         sunElement.style.top = '-50px';
         sunElement.style.setProperty('--target-y', `${targetY}px`);
-        sunElement.innerHTML = `<img src="95版/images/Sun1.png" style="width:100%;height:100%;">`;
+        sunElement.innerHTML = `<img src="图片和动画素材/阳光.gif" style="width:100%;height:100%;">`;
         sunElement.onclick = () => this.collectSun(sunItem.id);
         document.getElementById('lawn-container').appendChild(sunElement);
         
@@ -187,7 +187,7 @@ class Game {
         sunElement.style.left = `${x}px`;
         sunElement.style.top = `${y - 80}px`;
         sunElement.style.setProperty('--target-y', '80px');
-        sunElement.innerHTML = `<img src="95版/images/Sun1.png" style="width:100%;height:100%;">`;
+        sunElement.innerHTML = `<img src="图片和动画素材/阳光.gif" style="width:100%;height:100%;">`;
         sunElement.onclick = () => this.collectSun(sunItem.id);
         document.getElementById('lawn-container').appendChild(sunElement);
         
@@ -208,6 +208,7 @@ class Game {
             const element = document.getElementById(`sun-${id}`);
             if (element) element.remove();
             this.updateSunUI();
+            audioManager.playSunCollect();
         }
     }
 
@@ -250,6 +251,7 @@ class Game {
         for (let i = this.projectiles.length - 1; i >= 0; i--) {
             const projectile = this.projectiles[i];
             projectile.update(deltaTime);
+            projectile.render();
             
             if (projectile.x > window.innerWidth || projectile.x < 0) {
                 this.projectiles.splice(i, 1);
@@ -260,8 +262,8 @@ class Game {
             
             for (const zombie of this.zombies) {
                 if (zombie.row === projectile.row &&
-                    Math.abs(zombie.x - projectile.x) < 50 &&
-                    Math.abs(zombie.y - projectile.y) < 50) {
+                    Math.abs(zombie.x - projectile.x) < 100 &&
+                    Math.abs(zombie.y - projectile.y) < 150) {
                     
                     this.handleProjectileHit(projectile, zombie);
                     this.projectiles.splice(i, 1);
@@ -339,7 +341,7 @@ class Game {
     }
 
     checkWaveTransition() {
-        if (this.zombies.length === 0 && this.currentWave > 0) {
+        if (this.zombies.length === 0) {
             if (this.currentWave >= this.maxWaves && this.bigWaveCount >= 2) {
                 this.winGame();
                 return;
@@ -367,11 +369,11 @@ class Game {
             summer: {
                 weather: 'sunny',
                 waves: [
-                    { zombies: [{ type: 'normal', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 3 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 5 }, { type: 'cone', count: 2 }], isBigWave: true },
-                    { zombies: [{ type: 'normal', count: 4 }, { type: 'cone', count: 2 }, { type: 'football', count: 1 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 6 }, { type: 'cone', count: 4 }, { type: 'bucket', count: 2 }, { type: 'football', count: 1 }], isBigWave: true }
+                    { zombies: [{ type: 'normal', count: 15 }], isBigWave: false },
+                    { zombies: [{ type: 'normal', count: 12 }, { type: 'cone', count: 6 }], isBigWave: false },
+                    { zombies: [{ type: 'normal', count: 15 }, { type: 'cone', count: 7 }, { type: 'football', count: 3 }], isBigWave: true },
+                    { zombies: [{ type: 'normal', count: 18 }, { type: 'cone', count: 8 }, { type: 'football', count: 4 }, { type: 'bucket', count: 3 }], isBigWave: false },
+                    { zombies: [{ type: 'normal', count: 20 }, { type: 'cone', count: 10 }, { type: 'football', count: 3 }, { type: 'bucket', count: 5 }, { type: 'gargantuar', count: 5 }], isBigWave: true }
                 ]
             },
             autumn: {
@@ -400,16 +402,32 @@ class Game {
     }
 
     spawnZombies(waveConfig) {
-        let delay = 0;
+        const zombiesList = [];
         for (const group of waveConfig.zombies) {
             for (let i = 0; i < group.count; i++) {
+                zombiesList.push(group.type);
+            }
+        }
+        
+        let delay = 0;
+        const squadSize = 3;
+        
+        for (let i = 0; i < zombiesList.length; i += squadSize) {
+            const squad = zombiesList.slice(i, i + squadSize);
+            const squadRow = Math.floor(Math.random() * 5);
+            
+            for (let j = 0; j < squad.length; j++) {
+                const type = squad[j];
+                const row = Math.random() < 0.7 ? squadRow : Math.floor(Math.random() * 5);
+                
                 setTimeout(() => {
                     if (this.state !== GAME_STATES.PLAYING) return;
-                    const row = Math.floor(Math.random() * 5);
-                    this.spawnZombie(group.type, row);
+                    this.spawnZombie(type, row);
                 }, delay);
-                delay += 3000;
+                delay += 800;
             }
+            
+            delay += 2000 + Math.random() * 2000;
         }
     }
 
@@ -417,6 +435,7 @@ class Game {
         const zombie = this.createZombie(type, row);
         this.zombies.push(zombie);
         zombie.createElement();
+        audioManager.playZombieEnter();
     }
 
     createZombie(type, row) {
@@ -424,13 +443,20 @@ class Game {
             normal: { health: 200, speed: 0.8, name: '普通僵尸', score: 100 },
             cone: { health: 600, speed: 0.75, name: '路障僵尸', score: 200 },
             bucket: { health: 1200, speed: 0.7, name: '铁桶僵尸', score: 300 },
-            football: { health: 1600, speed: 1.0, name: '橄榄球僵尸', score: 400 },
-            newspaper: { health: 300, speed: 0.5, name: '读报僵尸', score: 150, hasNewspaper: true }
+            football: { health: 1680, speed: 1.6, name: '黑橄榄球僵尸', score: 500 },
+            newspaper: { health: 420, speed: 0.4, name: '读报僵尸', score: 200, hasNewspaper: true },
+            gargantuar: { health: 3000, speed: 0.64, name: '巨人僵尸', score: 1000 }
         };
         
         const config = zombieConfigs[type] || zombieConfigs.normal;
         const rules = SEASON_RULES[this.currentSeason];
-        const speed = config.speed * (rules.zombieMoveSpeedMultiplier || 1);
+        
+        let speed = config.speed;
+        if (type === 'football') {
+            speed = 1.6 * (rules.zombieMoveSpeedMultiplier || 1);
+        } else {
+            speed = config.speed * (rules.zombieMoveSpeedMultiplier || 1);
+        }
         
         return new Zombie(type, config.health, speed, row, config.name, config.score, config.hasNewspaper);
     }
@@ -481,6 +507,7 @@ class Game {
         
         if (projectile.type === 'icePea') {
             zombie.slowed = true;
+            zombie.frozen = false;
             zombie.slowTimer = 3000;
         }
     }
@@ -496,6 +523,7 @@ class Game {
         const plant = new Plant(plantType, row, col, this);
         this.plants.push(plant);
         plant.createElement();
+        audioManager.playPlantDeploy();
         
         this.updateSunUI();
         this.startPlantCooldown(plantType);
@@ -509,6 +537,7 @@ class Game {
             const plant = this.plants[index];
             plant.destroy();
             this.plants.splice(index, 1);
+            audioManager.playShovel();
             return true;
         }
         return false;
@@ -532,14 +561,6 @@ class Game {
         }
     }
 
-    updateCooldowns(deltaTime) {
-        for (const plant of this.plants) {
-            if (plant.attackCooldown > 0) {
-                plant.attackCooldown -= deltaTime;
-            }
-        }
-    }
-
     checkGameOver() {
         if (this.zombies.some(z => z.x < -100 && z.hasEnteredHouse && !this.lawnmowers[z.row])) {
             this.loseGame();
@@ -550,6 +571,9 @@ class Game {
         this.state = GAME_STATES.WIN;
         if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
         
+        audioManager.stopBGM();
+        audioManager.playWin();
+        
         document.getElementById('game-over').classList.remove('hidden');
         document.getElementById('game-over-title').textContent = '🎉 胜利！';
         document.getElementById('game-over-message').textContent = `恭喜你在${SEASON_RULES[this.currentSeason].name}中击败了所有僵尸！`;
@@ -558,6 +582,9 @@ class Game {
     loseGame() {
         this.state = GAME_STATES.LOSE;
         if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
+        
+        audioManager.stopBGM();
+        audioManager.playLose();
         
         document.getElementById('game-over').classList.remove('hidden');
         document.getElementById('game-over-title').textContent = '💀 失败';
@@ -569,10 +596,12 @@ class Game {
             this.state = GAME_STATES.PAUSED;
             if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
             document.getElementById('pause-overlay').classList.remove('hidden');
+            audioManager.pauseBGM();
         } else if (this.state === GAME_STATES.PAUSED) {
             this.state = GAME_STATES.PLAYING;
             this.startGameLoop();
             document.getElementById('pause-overlay').classList.add('hidden');
+            audioManager.resumeBGM();
         }
     }
 
@@ -580,10 +609,94 @@ class Game {
         this.state = GAME_STATES.MENU;
         if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
         
+        this.clearAllGameElements();
+        
         document.getElementById('game-area').classList.add('hidden');
+        document.getElementById('plant-select-screen').classList.add('hidden');
         document.getElementById('game-menu').classList.remove('hidden');
         document.getElementById('game-over').classList.add('hidden');
         document.getElementById('pause-overlay').classList.add('hidden');
+    }
+    
+    clearAllGameElements() {
+        const container = document.getElementById('lawn-container');
+        
+        container.querySelectorAll('.plant-in-cell').forEach(el => el.remove());
+        
+        container.querySelectorAll('.zombie').forEach(el => el.remove());
+        
+        container.querySelectorAll('.projectile').forEach(el => el.remove());
+        
+        container.querySelectorAll('.sun-item').forEach(el => el.remove());
+        
+        container.querySelectorAll('.explosion').forEach(el => el.remove());
+        
+        container.querySelectorAll('.season-effect').forEach(el => el.remove());
+        
+        container.querySelectorAll('.rain-drop').forEach(el => el.remove());
+        
+        container.querySelectorAll('.snowflake').forEach(el => el.remove());
+        
+        container.querySelectorAll('.leaf').forEach(el => el.remove());
+        
+        container.querySelectorAll('.fog-overlay').forEach(el => el.remove());
+        
+        container.querySelectorAll('.summer-glow').forEach(el => el.remove());
+        
+        document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('has-plant'));
+        
+        this.plants = [];
+        this.zombies = [];
+        this.projectiles = [];
+        this.sunItems = [];
+    }
+    
+    restartGame() {
+        this.state = GAME_STATES.PLAYING;
+        if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
+        
+        this.clearAllGameElements();
+        
+        this.sun = 150;
+        this.currentWave = 0;
+        this.lawnmowers = [true, true, true, true, true];
+        this.score = 0;
+        this.selectedPlant = null;
+        this.lastSunDrop = Date.now();
+        this.waveTimer = Date.now();
+        this.bigWaveCount = 0;
+        this.lastBigWave = 0;
+        
+        document.getElementById('pause-overlay').classList.add('hidden');
+        document.getElementById('game-over').classList.add('hidden');
+        
+        this.recreateLawnmowers();
+        
+        this.updateUI();
+        this.showSeasonEffect(this.currentSeason);
+        this.startWave();
+        this.startGameLoop();
+    }
+    
+    restartWithSelectedPlants() {
+        audioManager.stopBGM();
+        document.getElementById('game-area').classList.add('hidden');
+        document.getElementById('plant-select-screen').classList.remove('hidden');
+        selectedPlants = [];
+        updateSelectedPlantsPreview();
+    }
+    
+    recreateLawnmowers() {
+        const container = document.getElementById('lawn-container');
+        container.querySelectorAll('.lawnmower-row').forEach(el => el.remove());
+        
+        for (let i = 0; i < 5; i++) {
+            const lawnmowerRow = document.createElement('div');
+            lawnmowerRow.className = 'lawnmower-row';
+            lawnmowerRow.setAttribute('data-row', i);
+            lawnmowerRow.innerHTML = `<img src="95版/reanim/LawnMower_body.png" class="lawnmower" id="lawnmower-${i}">`;
+            container.appendChild(lawnmowerRow);
+        }
     }
 
     updateUI() {
@@ -596,6 +709,20 @@ class Game {
 
     updateSunUI() {
         document.getElementById('sun-count').textContent = this.sun;
+        
+        document.querySelectorAll('.plant-card').forEach(card => {
+            const plantType = card.dataset.plant;
+            const plantConfig = Plant.getConfig(plantType);
+            const costEl = card.querySelector('.plant-cost');
+            
+            if (plantConfig && costEl) {
+                if (this.sun >= plantConfig.cost) {
+                    costEl.style.color = '#ffd700';
+                } else {
+                    costEl.style.color = '#ef4444';
+                }
+            }
+        });
     }
 
     updateWaveUI() {

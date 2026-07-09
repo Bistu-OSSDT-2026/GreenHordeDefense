@@ -10,10 +10,30 @@ const AudioManager = {
     reverbBuffer: null,
     bgmAudio: null,
     currentBgmTrack: 'day',
+    sfxBuffers: {},
 
     bgmTracks: {
         day: 'sounds/bgm_day.mp3',
         night: 'sounds/bgm_night.mp3'
+    },
+
+    async loadSFX(name, url) {
+        if (this.sfxBuffers[name]) return this.sfxBuffers[name];
+        this.init();
+        try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+            this.sfxBuffers[name] = audioBuffer;
+            return audioBuffer;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    preloadSFX() {
+        this.loadSFX('chomp_food', 'sounds/chomp_food.mp3');
+        this.loadSFX('chomp_crunch', 'sounds/chomp_crunch.mp3');
     },
 
     init() {
@@ -492,29 +512,41 @@ const AudioManager = {
 
     playChomp() {
         this.init();
+        const ctx = this.audioContext;
 
-        const playSingleChomp = (delay = 0) => {
-            const audio1 = new Audio('sounds/chomp_food.mp3');
-            const audio2 = new Audio('sounds/chomp_crunch.mp3');
-
-            audio1.volume = 0.45 * this.sfxVolume;
-            audio2.volume = 0.3 * this.sfxVolume;
-
-            audio1.playbackRate = 0.85 + Math.random() * 0.1;
-            audio2.playbackRate = 0.85 + Math.random() * 0.1;
-
-            if (delay > 0) {
-                setTimeout(() => {
-                    audio1.play().catch(() => {});
-                    setTimeout(() => audio2.play().catch(() => {}), 25);
-                }, delay);
-            } else {
-                audio1.play().catch(() => {});
-                setTimeout(() => audio2.play().catch(() => {}), 25);
+        const playBuffer = (name, volume, offset, startTime) => {
+            const buffer = this.sfxBuffers[name];
+            if (!buffer) {
+                this.loadSFX(name, `sounds/${name}.mp3`).then(buf => {
+                    if (buf) this.playChomp();
+                });
+                return;
             }
+
+            const chompDuration = 0.28;
+            const source = ctx.createBufferSource();
+            const gain = ctx.createGain();
+            source.buffer = buffer;
+            source.playbackRate.value = 0.9 + Math.random() * 0.15;
+
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(volume * this.sfxVolume, startTime + 0.008);
+            gain.gain.setValueAtTime(volume * this.sfxVolume * 0.9, startTime + chompDuration * 0.5);
+            gain.gain.exponentialRampToValueAtTime(0.001, startTime + chompDuration);
+
+            source.connect(gain);
+            gain.connect(ctx.destination);
+            source.start(startTime, offset);
+            source.stop(startTime + chompDuration);
         };
 
-        playSingleChomp(0);
-        playSingleChomp(300 + Math.random() * 100);
+        const playChompSound = (delayMs) => {
+            const startTime = ctx.currentTime + delayMs / 1000;
+            playBuffer('chomp_food', 0.5, 0.08, startTime);
+            playBuffer('chomp_crunch', 0.35, 0.15, startTime + 0.02);
+        };
+
+        playChompSound(0);
+        playChompSound(280 + Math.random() * 120);
     }
 };

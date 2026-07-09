@@ -141,5 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('click', () => {
         AudioManager.init();
+        AudioManager.preloadSFX();
     }, { once: true });
 });

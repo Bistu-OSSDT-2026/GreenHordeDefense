@@ -16,6 +16,24 @@
                 <button onclick="startGame('autumn')" class="season-btn autumn">🍂 秋天</button>
                 <button onclick="startGame('winter')" class="season-btn winter">❄️ 冬天</button>
             </div>
+            <div class="bgm-select">
+                <p class="bgm-label">🎵 背景音乐</p>
+                <div class="bgm-options">
+                    <label class="bgm-option">
+                        <input type="radio" name="bgm" value="day" checked onchange="selectBGM('day')">
+                        <span>☀️ 白天</span>
+                    </label>
+                    <label class="bgm-option">
+                        <input type="radio" name="bgm" value="night" onchange="selectBGM('night')">
+                        <span>🌙 夜晚</span>
+                    </label>
+                </div>
+                <div class="bgm-controls">
+                    <button class="bgm-preview-btn" onclick="toggleBGMPreview()" id="bgmPreviewBtn">▶ 试听</button>
+                    <input type="range" id="menuBGMVolume" min="0" max="100" value="30" oninput="updateMenuBGMVolume(this.value)">
+                    <span id="menuBGMVolumeValue">30%</span>
+                </div>
+            </div>
             <div class="rules-link">
                 <a href="game_rules.md" target="_blank">查看游戏规则</a>
             </div>

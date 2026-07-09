@@ -1,9 +1,47 @@
 let selectedPlant = null;
 let shovelMode = false;
+let selectedBGM = 'day';
+let isPreviewingBGM = false;
+
+function selectBGM(track) {
+    selectedBGM = track;
+    AudioManager.playClick();
+    if (isPreviewingBGM) {
+        AudioManager.stopBGM(() => {
+            AudioManager.startBGM(track);
+        });
+    }
+}
+
+function toggleBGMPreview() {
+    const btn = document.getElementById('bgmPreviewBtn');
+    AudioManager.playClick();
+
+    if (isPreviewingBGM) {
+        AudioManager.stopBGM();
+        isPreviewingBGM = false;
+        btn.textContent = '▶ 试听';
+    } else {
+        AudioManager.startBGM(selectedBGM);
+        isPreviewingBGM = true;
+        btn.textContent = '⏹ 停止';
+    }
+}
+
+function updateMenuBGMVolume(val) {
+    document.getElementById('menuBGMVolumeValue').textContent = val + '%';
+    AudioManager.setBGMVolume(val / 100);
+}
 
 function startGame(season) {
     AudioManager.playClick();
-    AudioManager.startBGM();
+    if (isPreviewingBGM) {
+        AudioManager.stopBGM(() => {
+            AudioManager.startBGM(selectedBGM);
+        });
+    } else {
+        AudioManager.startBGM(selectedBGM);
+    }
     game = new Game();
     game.startGame(season);
     SeasonEffects.applySeasonEffects(season);
@@ -79,6 +117,9 @@ function backToMenu() {
     if (game) {
         AudioManager.playClick();
         AudioManager.stopBGM();
+        isPreviewingBGM = false;
+        const btn = document.getElementById('bgmPreviewBtn');
+        if (btn) btn.textContent = '▶ 试听';
         game.backToMenu();
     }
 }

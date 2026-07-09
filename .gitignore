@@ -1,6 +1,7 @@
 *.exe
 *.dll
 *.mp3
+!sounds/*.mp3
 *.ogg
 
 *.swf

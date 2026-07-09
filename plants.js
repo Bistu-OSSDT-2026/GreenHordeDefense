@@ -37,6 +37,16 @@ class Plant {
             doubleShot: true,
             image: '95版/reanim/ThreePeater_head.png'
         },
+        threepeater: {
+            cost: 325,
+            cooldown: 7.5,
+            health: 100,
+            attackCooldown: 1400,
+            damage: 20,
+            type: 'shooter',
+            projectileType: 'pea',
+            image: 'assets/plants/threepeater.gif'
+        },
         firePea: {
             cost: 175,
             cooldown: 7.5,
@@ -119,6 +129,16 @@ class Plant {
             type: 'shooter',
             image: '95版/reanim/PuffShroom_head.png'
         },
+        gloomShroom: {
+            cost: 150,
+            cooldown: 7.5,
+            health: 100,
+            attackCooldown: 1200,
+            damage: 30,
+            range: 130,
+            type: 'aoe',
+            image: 'assets/plants/gloomShroom.gif'
+        },
         iceShroom: {
             cost: 75,
             cooldown: 30,
@@ -177,7 +197,7 @@ class Plant {
                 cells[this.col].classList.add('has-plant');
                 
                 this.element = document.createElement('img');
-                this.element.className = 'plant-in-cell';
+                this.element.className = `plant-in-cell ${this.type}`;
                 this.element.src = this.config.image;
                 this.element.id = `plant-${this.id}`;
                 
@@ -213,6 +233,13 @@ class Plant {
             }
         }
 
+        if (this.config.type === 'aoe') {
+            this.attackCooldown -= deltaTime;
+            if (this.attackCooldown <= 0) {
+                this.attackArea(game);
+            }
+        }
+
         if (this.config.type === 'sun') {
             this.attackCooldown -= deltaTime;
             if (this.attackCooldown <= 0) {
@@ -239,6 +266,11 @@ class Plant {
         
         if (rules.shooterAccuracy !== undefined && Math.random() > rules.shooterAccuracy) {
             this.attackCooldown = this.config.attackCooldown;
+            return;
+        }
+
+        if (this.type === 'threepeater') {
+            this.attackThreepeater(game);
             return;
         }
 
@@ -270,6 +302,102 @@ class Plant {
         }
 
         this.attackCooldown = this.config.attackCooldown;
+    }
+
+    attackThreepeater(game) {
+        const targetRows = this.getThreepeaterRows();
+        const hasTarget = targetRows.some(row =>
+            game.zombies.some(z => z.row === row && z.x > this.x)
+        );
+
+        if (!hasTarget) {
+            this.attackCooldown = 100;
+            return;
+        }
+
+        let damage = this.config.damage;
+
+        if (game.weather === 'rain') {
+            damage *= 1.2;
+        }
+
+        for (const row of targetRows) {
+            const projectile = new Projectile('pea', this.x, this.getRowProjectileY(row), row, damage, this.type);
+            game.projectiles.push(projectile);
+            projectile.createElement();
+        }
+
+        this.attackCooldown = this.config.attackCooldown;
+    }
+
+    getThreepeaterRows() {
+        const rowCount = this.getLawnRowCount();
+        return [this.row - 1, this.row, this.row + 1].filter(row => row >= 0 && row < rowCount);
+    }
+
+    getLawnRowCount() {
+        const lawn = document.getElementById('lawn');
+        return lawn ? lawn.getElementsByClassName('row').length : 5;
+    }
+
+    getRowProjectileY(row) {
+        const lawn = document.getElementById('lawn');
+        const container = document.getElementById('lawn-container');
+        if (!lawn || !container) return this.y;
+
+        const rows = lawn.getElementsByClassName('row');
+        const targetRow = rows[row];
+        if (!targetRow) return this.y;
+
+        const cells = targetRow.getElementsByClassName('cell');
+        const targetCell = cells[this.col] || cells[0];
+        if (!targetCell) return this.y;
+
+        const rect = targetCell.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        return rect.top - containerRect.top + rect.height / 2;
+    }
+
+    attackArea(game) {
+        const range = this.config.range || 130;
+        const targets = game.zombies.filter(z =>
+            Math.abs(z.row - this.row) <= 1 &&
+            Math.abs(z.x - this.x) <= range
+        );
+
+        if (targets.length === 0) {
+            this.attackCooldown = 100;
+            return;
+        }
+
+        for (const zombie of targets) {
+            zombie.takeDamage(this.config.damage);
+        }
+
+        this.showGloomPulse();
+        this.attackCooldown = this.config.attackCooldown;
+    }
+
+    showGloomPulse() {
+        const container = document.getElementById('lawn-container');
+        if (!container) return;
+
+        const pulse = document.createElement('div');
+        pulse.className = 'gloom-pulse';
+        pulse.style.left = `${this.x - 70}px`;
+        pulse.style.top = `${this.y - 70}px`;
+        container.appendChild(pulse);
+
+        if (this.element) {
+            this.element.classList.add('attacking');
+            setTimeout(() => {
+                if (this.element) {
+                    this.element.classList.remove('attacking');
+                }
+            }, 350);
+        }
+
+        setTimeout(() => pulse.remove(), 450);
     }
 
     findTarget(game) {

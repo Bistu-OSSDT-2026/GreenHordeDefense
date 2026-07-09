@@ -1,7 +1,8 @@
 const PLANT_TYPES = {
     ASH: ['cherryBomb', 'jalapeno', 'doomShroom', 'potatoMine', 'squash'],
-    SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom'],
+    SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom', 'threepeater'],
     THROWER: ['melonPult'],
+    AOE: ['gloomShroom'],
     FIRE: ['firePea', 'jalapeno'],
     ICE: ['icePea', 'iceShroom'],
     SUN: ['sunflower', 'sunShroom'],

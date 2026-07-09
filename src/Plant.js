@@ -1,4 +1,6 @@
-class Plant {
+import { SEASON_RULES, PLANT_TYPES } from './constants.js';
+
+export class Plant {
     static configs = {
         sunflower: {
             cost: 50,
@@ -149,14 +151,14 @@ class Plant {
         this.targetZombie = null;
         this.id = Date.now() + Math.random();
         this.element = null;
-        
+
         this.updatePosition();
     }
 
     updatePosition() {
         const lawn = document.getElementById('lawn');
         if (!lawn) return;
-        
+
         const rows = lawn.getElementsByClassName('row');
         if (rows[this.row]) {
             const cells = rows[this.row].getElementsByClassName('cell');
@@ -175,12 +177,12 @@ class Plant {
             const cells = rows[this.row].getElementsByClassName('cell');
             if (cells[this.col]) {
                 cells[this.col].classList.add('has-plant');
-                
+
                 this.element = document.createElement('img');
                 this.element.className = 'plant-in-cell';
                 this.element.src = this.config.image;
                 this.element.id = `plant-${this.id}`;
-                
+
                 cells[this.col].appendChild(this.element);
             }
         }
@@ -236,7 +238,7 @@ class Plant {
 
     attack(game) {
         const rules = SEASON_RULES[game.currentSeason];
-        
+
         if (rules.shooterAccuracy !== undefined && Math.random() > rules.shooterAccuracy) {
             this.attackCooldown = this.config.attackCooldown;
             return;
@@ -249,7 +251,7 @@ class Plant {
         }
 
         let damage = this.config.damage;
-        
+
         if (game.weather === 'rain') {
             if (PLANT_TYPES.SHOOTER.includes(this.type) || PLANT_TYPES.THROWER.includes(this.type)) {
                 damage *= 1.2;
@@ -287,7 +289,7 @@ class Plant {
         if (!this.exploding) {
             this.exploding = true;
             this.explodeTimer = this.config.explodeDelay;
-            
+
             if (this.element) {
                 this.element.classList.add('exploding');
             }
@@ -308,7 +310,7 @@ class Plant {
                 this.destroy();
                 return;
             }
-            
+
             const distance = Math.abs(this.targetZombie.x - this.x);
             if (distance > 80) {
                 this.targetZombie = null;
@@ -319,8 +321,8 @@ class Plant {
             return;
         }
 
-        const zombiesInRow = game.zombies.filter(z => 
-            z.row === this.row && 
+        const zombiesInRow = game.zombies.filter(z =>
+            z.row === this.row &&
             Math.abs(z.x - this.x) < 100
         );
 
@@ -333,7 +335,7 @@ class Plant {
         if (!this.targetZombie) return;
 
         this.targetZombie.takeDamage(this.config.damage);
-        
+
         const explosion = document.createElement('div');
         explosion.className = 'explosion';
         explosion.style.left = `${this.x - 50}px`;
@@ -341,7 +343,7 @@ class Plant {
         document.getElementById('lawn-container').appendChild(explosion);
 
         setTimeout(() => explosion.remove(), 500);
-        
+
         this.destroy();
     }
 
@@ -355,11 +357,11 @@ class Plant {
         setTimeout(() => explosion.remove(), 500);
 
         let damage = this.config.damage;
-        
+
         if (game.weather === 'rain') {
             damage *= 0.7;
         }
-        
+
         if (this.type === 'jalapeno') {
             for (const zombie of game.zombies) {
                 if (zombie.row === this.row) {
@@ -402,7 +404,7 @@ class Plant {
 
     takeDamage(damage) {
         if (this.exploding || this.type === 'squash') return;
-        
+
         this.health -= damage;
         if (this.health <= 0) {
             this.destroy();
@@ -413,7 +415,7 @@ class Plant {
         if (this.element) {
             this.element.remove();
         }
-        
+
         const rows = document.getElementById('lawn').getElementsByClassName('row');
         if (rows[this.row]) {
             const cells = rows[this.row].getElementsByClassName('cell');
@@ -435,7 +437,7 @@ class Plant {
     }
 }
 
-class Projectile {
+export class Projectile {
     constructor(type, x, y, row, damage, plantType) {
         this.type = type;
         this.x = x;

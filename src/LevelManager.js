@@ -1,4 +1,6 @@
-class LevelManager {
+import { SEASON_RULES } from './constants.js';
+
+export class LevelManager {
     constructor() {
         this.levels = [
             {
@@ -62,7 +64,7 @@ class LevelManager {
                 ]
             }
         ];
-        
+
         this.currentLevelIndex = 0;
     }
 
@@ -91,13 +93,13 @@ class LevelManager {
     }
 }
 
-class SeasonEffects {
+export class SeasonEffects {
     static applySeasonEffects(season) {
         const rules = SEASON_RULES[season];
         const container = document.getElementById('lawn-container');
-        
+
         container.style.filter = 'none';
-        
+
         switch (season) {
             case 'spring':
                 container.style.filter = 'hue-rotate(150deg) saturate(1.2)';
@@ -207,45 +209,3 @@ class SeasonEffects {
         }
     }
 }
-
-const levelManager = new LevelManager();
-
-const additionalStyles = `
-@keyframes flowerSway {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
-}
-
-@keyframes heatwave {
-    0%, 100% { opacity: 0; transform: translateY(0); }
-    50% { opacity: 1; transform: translateY(-10px); }
-}
-
-.season-overlay {
-    pointer-events: none;
-}
-
-.zombie.enraged {
-    animation: enragedShake 0.2s ease-in-out infinite;
-}
-
-@keyframes enragedShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    75% { transform: translateX(2px); }
-}
-
-.plant-in-cell.exploding {
-    animation: plantExplode 0.5s ease-out forwards;
-}
-
-@keyframes plantExplode {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.8; }
-    100% { transform: scale(0); opacity: 0; }
-}
-`;
-
-const styleSheet = document.createElement('style');
-styleSheet.textContent = additionalStyles;
-document.head.appendChild(styleSheet);

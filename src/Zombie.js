@@ -1,4 +1,4 @@
-class Zombie {
+export class Zombie {
     constructor(type, health, speed, row, name, score, hasNewspaper = false) {
         this.type = type;
         this.health = health;
@@ -35,7 +35,7 @@ class Zombie {
         this.element.id = `zombie-${this.id}`;
         this.element.style.left = `${this.x}px`;
         this.element.style.top = `${this.y}px`;
-        
+
         let imagePath = '95版/reanim/Zombie_body.png';
         switch (this.type) {
             case 'cone':
@@ -51,7 +51,7 @@ class Zombie {
                 imagePath = '95版/reanim/Zombie_body.png';
                 break;
         }
-        
+
         this.element.innerHTML = `
             <img src="${imagePath}" class="zombie-image" style="width:100%;height:100%;">
             <div class="zombie-ash" style="display:none;"></div>
@@ -77,7 +77,7 @@ class Zombie {
         } else {
             this.eatTimer += deltaTime;
             const attackInterval = 1000 / (game.currentSeason === 'summer' ? 1.2 : 1);
-            
+
             if (this.eatTimer >= attackInterval) {
                 this.eatTimer = 0;
                 this.eatPlant(game);
@@ -85,7 +85,7 @@ class Zombie {
         }
 
         this.animationFrame = (this.animationFrame + deltaTime * 0.01) % 100;
-        
+
         if (this.hasNewspaper && this.newspaperHealth <= 0) {
             this.hasNewspaper = false;
             this.speed = this.baseSpeed * 2;
@@ -97,11 +97,11 @@ class Zombie {
 
     checkCollision(game) {
         const plantsInRow = game.plants.filter(p => p.row === this.row);
-        
+
         const closestPlant = plantsInRow.find(p => {
             return p.x > this.x - 60 && p.x < this.x + 100;
         });
-        
+
         if (closestPlant) {
             this.eating = true;
             this.targetPlant = closestPlant;
@@ -145,48 +145,48 @@ class Zombie {
                 return;
             }
         }
-        
+
         this.health -= damage;
     }
 
     showAshAnimation() {
         if (!this.element) return;
-        
+
         const image = this.element.querySelector('.zombie-image');
         const ash = this.element.querySelector('.zombie-ash');
-        
+
         if (image) {
             image.style.display = 'none';
         }
-        
+
         if (ash) {
             ash.style.display = 'block';
         }
-        
+
         this.element.classList.add('ash');
     }
 
     showDeadAnimation() {
         if (!this.element) return;
-        
+
         const image = this.element.querySelector('.zombie-image');
         const ash = this.element.querySelector('.zombie-ash');
-        
+
         if (image) {
             image.style.display = 'none';
         }
-        
+
         if (ash) {
             ash.style.display = 'none';
         }
-        
+
         this.element.classList.add('dead');
     }
 
     render() {
         if (this.element) {
             this.element.style.left = `${this.x}px`;
-            
+
             if (!this.eating) {
                 const bounce = Math.sin(this.animationFrame) * 5;
                 this.element.style.transform = `translateY(${bounce}px)`;

@@ -122,8 +122,8 @@ body {
 }
 
 .sun-icon {
-    width: 80px;
-    height: 80px;
+    width: 40px;
+    height: 40px;
     animation: sunPulse 2s infinite;
 }
 
@@ -228,7 +228,6 @@ body {
     position: relative;
     background: url('95版/images/background1.jpg') center/cover;
     overflow: hidden;
-    transition: filter 0.5s ease;
 }
 
 #lawn {
@@ -334,18 +333,21 @@ body {
 .projectile.pea {
     background: #22c55e;
     border-radius: 50%;
+    animation: peaPulse 0.2s ease-in-out infinite;
 }
 
 .projectile.icePea {
     background: #67e8f9;
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(103, 232, 249, 0.5);
+    animation: iceGlow 0.3s ease-in-out infinite;
 }
 
 .projectile.firePea {
     background: #ef4444;
     border-radius: 50%;
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+    animation: fireGlow 0.2s ease-in-out infinite;
 }
 
 .projectile.melon {
@@ -353,6 +355,27 @@ body {
     border-radius: 50%;
     width: 30px;
     height: 30px;
+    animation: melonSpin 0.3s linear infinite;
+}
+
+@keyframes peaPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes iceGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(103, 232, 249, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(103, 232, 249, 0.8); }
+}
+
+@keyframes fireGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+    50% { box-shadow: 0 0 25px rgba(239, 68, 68, 1); }
+}
+
+@keyframes melonSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .sun-item {
@@ -645,8 +668,8 @@ body {
 
 .sun-item {
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     z-index: 15;
     cursor: pointer;
     transition: transform 0.2s ease;
@@ -729,4 +752,240 @@ body {
     background: #FF6347;
     border-color: #FF4500;
     box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+}
+
+
+/* ============================================================
+ * 选植物界面（plant-picker）样式
+ * 由 feature/zsyss66-plant-picker 提交
+ * ============================================================ */
+
+#plant-picker-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    z-index: 50;
+    color: #fff;
+}
+
+#plant-picker-screen h2 {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    text-align: center;
+}
+
+.picker-hint {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 30px;
+    text-align: center;
+    transition: color 0.2s ease;
+}
+
+#picker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 100px);
+    grid-template-rows: repeat(2, 130px);
+    gap: 14px;
+    justify-content: center;
+    margin-bottom: 30px;
+    max-width: 90vw;
+}
+
+.picker-card {
+    width: 100px;
+    height: 130px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.25s ease;
+    user-select: none;
+}
+
+.picker-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.18);
+    border-color: rgba(255, 255, 0, 0.4);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.picker-card.selected {
+    background: rgba(255, 215, 0, 0.25);
+    border-color: #ffd700;
+    box-shadow: 0 0 22px rgba(255, 215, 0, 0.6);
+    transform: translateY(-4px);
+}
+
+.picker-card.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(0.7);
+}
+
+.picker-card.disabled:hover {
+    transform: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: none;
+}
+
+.picker-icon {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.picker-cost {
+    margin-top: 4px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
+
+.picker-checkmark {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #16213e;
+    background: #ffd700;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.4);
+    transition: all 0.2s ease;
+}
+
+.picker-card.selected .picker-checkmark {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.picker-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.picker-counter {
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 1px;
+}
+
+#picker-count {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+#picker-max {
+    color: #fff;
+    font-weight: bold;
+}
+
+.picker-buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.picker-btn {
+    padding: 12px 28px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #fff;
+    font-weight: 500;
+}
+
+.picker-btn.primary {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+}
+
+.picker-btn.primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(34, 197, 94, 0.6);
+}
+
+.picker-btn.primary:disabled {
+    background: rgba(100, 100, 100, 0.5);
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.5;
+}
+
+.picker-btn.secondary {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.picker-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* 在战斗中，被过滤掉的卡牌直接隐藏 */
+.plant-card.picker-hidden {
+    display: none !important;
+}
+
+/* 响应式：窄屏缩成 4 列 */
+@media (max-width: 900px) {
+    #picker-grid {
+        grid-template-columns: repeat(4, 90px);
+        grid-template-rows: repeat(4, 120px);
+    }
+    .picker-card {
+        width: 90px;
+        height: 120px;
+    }
+    .picker-icon {
+        width: 56px;
+        height: 56px;
+    }
+}
+
+@media (max-width: 600px) {
+    #picker-grid {
+        grid-template-columns: repeat(3, 80px);
+        grid-template-rows: repeat(5, 110px);
+    }
+    .picker-card {
+        width: 80px;
+        height: 110px;
+    }
+    .picker-icon {
+        width: 48px;
+        height: 48px;
+    }
+    #plant-picker-screen h2 {
+        font-size: 1.8rem;
+    }
 }

@@ -11,20 +11,37 @@
         <div id="game-menu">
             <h1>植物大战僵尸·四季版</h1>
             <div class="season-select">
-                <button onclick="startGame('spring')" class="season-btn spring">🌱 春天</button>
-                <button onclick="startGame('summer')" class="season-btn summer">☀️ 夏天</button>
-                <button onclick="startGame('autumn')" class="season-btn autumn">🍂 秋天</button>
-                <button onclick="startGame('winter')" class="season-btn winter">❄️ 冬天</button>
+                <button onclick="showPlantPicker('spring')" class="season-btn spring">🌱 春天</button>
+                <button onclick="showPlantPicker('summer')" class="season-btn summer">☀️ 夏天</button>
+                <button onclick="showPlantPicker('autumn')" class="season-btn autumn">🍂 秋天</button>
+                <button onclick="showPlantPicker('winter')" class="season-btn winter">❄️ 冬天</button>
             </div>
             <div class="rules-link">
                 <a href="game_rules.md" target="_blank">查看游戏规则</a>
             </div>
         </div>
 
+        <!-- ===== 新增：选植物界面 ===== -->
+        <div id="plant-picker-screen" class="hidden">
+            <h2>选择本局植物（最多 6 种）</h2>
+            <p class="picker-hint">点击植物卡牌进行选择或取消；选满 6 种后未选的卡牌将变灰</p>
+            <div id="picker-grid"></div>
+            <div class="picker-footer">
+                <div class="picker-counter">
+                    已选：<span id="picker-count">0</span> / <span id="picker-max">6</span>
+                </div>
+                <div class="picker-buttons">
+                    <button id="picker-reset" class="picker-btn secondary">重选</button>
+                    <button id="picker-back" class="picker-btn secondary">返回主菜单</button>
+                    <button id="picker-confirm" class="picker-btn primary" disabled>开始战斗</button>
+                </div>
+            </div>
+        </div>
+
         <div id="game-area" class="hidden">
             <div id="game-header">
                 <div class="sun-container">
-                    <img src="95版/images/Sun1.gif" class="sun-icon">
+                    <img src="95版/images/SunBank.png" class="sun-icon">
                     <span id="sun-count">150</span>
                 </div>
                 <div class="wave-info">
@@ -42,72 +59,72 @@
 
             <div id="plant-selector">
                 <div class="plant-card" data-plant="sunflower" onclick="selectPlant('sunflower')">
-                    <img src="95版/reanim/SunFlower_head.gif" class="plant-icon">
+                    <img src="95版/reanim/SunFlower_head.png" class="plant-icon">
                     <span class="plant-cost">50</span>
                     <div class="plant-cooldown" id="cd-sunflower"></div>
                 </div>
                 <div class="plant-card" data-plant="peaShooter" onclick="selectPlant('peaShooter')">
-                    <img src="95版/reanim/PeaShooter_Head.gif" class="plant-icon">
+                    <img src="95版/reanim/PeaShooter_Head.png" class="plant-icon">
                     <span class="plant-cost">100</span>
                     <div class="plant-cooldown" id="cd-peaShooter"></div>
                 </div>
                 <div class="plant-card" data-plant="icePea" onclick="selectPlant('icePea')">
-                    <img src="95版/reanim/SnowPea_head.gif" class="plant-icon">
+                    <img src="95版/reanim/SnowPea_head.png" class="plant-icon">
                     <span class="plant-cost">100</span>
                     <div class="plant-cooldown" id="cd-icePea"></div>
                 </div>
                 <div class="plant-card" data-plant="doublePea" onclick="selectPlant('doublePea')">
-                    <img src="95版/reanim/ThreePeater_head.gif" class="plant-icon">
+                    <img src="95版/reanim/ThreePeater_head.png" class="plant-icon">
                     <span class="plant-cost">200</span>
                     <div class="plant-cooldown" id="cd-doublePea"></div>
                 </div>
                 <div class="plant-card" data-plant="firePea" onclick="selectPlant('firePea')">
-                    <img src="95版/reanim/PeaShooter_Head.gif" class="plant-icon">
+                    <img src="95版/reanim/PeaShooter_Head.png" class="plant-icon">
                     <span class="plant-cost">175</span>
                     <div class="plant-cooldown" id="cd-firePea"></div>
                 </div>
                 <div class="plant-card" data-plant="melonPult" onclick="selectPlant('melonPult')">
-                    <img src="95版/reanim/Melonpult_body.webp" class="plant-icon">
+                    <img src="95版/reanim/Melonpult_body.png" class="plant-icon">
                     <span class="plant-cost">300</span>
                     <div class="plant-cooldown" id="cd-melonPult"></div>
                 </div>
                 <div class="plant-card" data-plant="cherryBomb" onclick="selectPlant('cherryBomb')">
-                    <img src="95版/reanim/CherryBomb_left1.gif" class="plant-icon">
+                    <img src="95版/reanim/CherryBomb_left1.png" class="plant-icon">
                     <span class="plant-cost">150</span>
                     <div class="plant-cooldown" id="cd-cherryBomb"></div>
                 </div>
                 <div class="plant-card" data-plant="jalapeno" onclick="selectPlant('jalapeno')">
-                    <img src="95版/reanim/Jalapeno_body.gif" class="plant-icon">
+                    <img src="95版/reanim/Jalapeno_body.png" class="plant-icon">
                     <span class="plant-cost">125</span>
                     <div class="plant-cooldown" id="cd-jalapeno"></div>
                 </div>
                 <div class="plant-card" data-plant="wallnut" onclick="selectPlant('wallnut')">
-                    <img src="95版/reanim/Wallnut_body.gif" class="plant-icon">
+                    <img src="95版/reanim/Wallnut_body.png" class="plant-icon">
                     <span class="plant-cost">50</span>
                     <div class="plant-cooldown" id="cd-wallnut"></div>
                 </div>
                 <div class="plant-card" data-plant="squash" onclick="selectPlant('squash')">
-                    <img src="95版/reanim/Squash_body.gif" class="plant-icon">
+                    <img src="95版/reanim/Squash_body.png" class="plant-icon">
                     <span class="plant-cost">50</span>
                     <div class="plant-cooldown" id="cd-squash"></div>
                 </div>
                 <div class="plant-card" data-plant="doomShroom" onclick="selectPlant('doomShroom')">
-                    <img src="95版/reanim/DoomShroom_body.gif" class="plant-icon">
+                    <img src="95版/reanim/DoomShroom_body.png" class="plant-icon">
                     <span class="plant-cost">125</span>
                     <div class="plant-cooldown" id="cd-doomShroom"></div>
                 </div>
                 <div class="plant-card" data-plant="sunShroom" onclick="selectPlant('sunShroom')">
-                    <img src="95版/reanim/SunShroom_head.gif" class="plant-icon">
+                    <img src="95版/reanim/SunShroom_head.png" class="plant-icon">
                     <span class="plant-cost">25</span>
                     <div class="plant-cooldown" id="cd-sunShroom"></div>
                 </div>
                 <div class="plant-card" data-plant="puffShroom" onclick="selectPlant('puffShroom')">
-                    <img src="95版/reanim/PuffShroom_head.gif" class="plant-icon">
+                    <img src="95版/reanim/PuffShroom_head.png" class="plant-icon">
                     <span class="plant-cost">0</span>
                     <div class="plant-cooldown" id="cd-puffShroom"></div>
                 </div>
                 <div class="plant-card" data-plant="iceShroom" onclick="selectPlant('iceShroom')">
-                    <img src="95版/reanim/IceShroom_body.gif" class="plant-icon">
+                    <img src="95版/reanim/IceShroom_body.png" class="plant-icon">
                     <span class="plant-cost">75</span>
                     <div class="plant-cooldown" id="cd-iceShroom"></div>
                 </div>
@@ -172,19 +189,19 @@
                     </div>
                 </div>
                 <div class="lawnmower-row" data-row="0">
-                    <img src="95版/reanim/LawnMower_body.gif" class="lawnmower" id="lawnmower-0">
+                    <img src="95版/reanim/LawnMower_body.png" class="lawnmower" id="lawnmower-0">
                 </div>
                 <div class="lawnmower-row" data-row="1">
-                    <img src="95版/reanim/LawnMower_body.gif" class="lawnmower" id="lawnmower-1">
+                    <img src="95版/reanim/LawnMower_body.png" class="lawnmower" id="lawnmower-1">
                 </div>
                 <div class="lawnmower-row" data-row="2">
-                    <img src="95版/reanim/LawnMower_body.gif" class="lawnmower" id="lawnmower-2">
+                    <img src="95版/reanim/LawnMower_body.png" class="lawnmower" id="lawnmower-2">
                 </div>
                 <div class="lawnmower-row" data-row="3">
-                    <img src="95版/reanim/LawnMower_body.gif" class="lawnmower" id="lawnmower-3">
+                    <img src="95版/reanim/LawnMower_body.png" class="lawnmower" id="lawnmower-3">
                 </div>
                 <div class="lawnmower-row" data-row="4">
-                    <img src="95版/reanim/LawnMower_body.gif" class="lawnmower" id="lawnmower-4">
+                    <img src="95版/reanim/LawnMower_body.png" class="lawnmower" id="lawnmower-4">
                 </div>
             </div>
 
@@ -206,6 +223,7 @@
     <script src="plants.js"></script>
     <script src="zombies.js"></script>
     <script src="levels.js"></script>
+    <script src="plant-picker.js"></script>
     <script src="main.js"></script>
 </body>
 </html>

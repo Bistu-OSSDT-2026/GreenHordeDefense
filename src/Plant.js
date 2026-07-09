@@ -201,7 +201,6 @@ export class Plant {
             const growthTime = this.config.growthTime / (game.currentSeason === 'spring' ? 1.2 : 1);
             if (this.growthTimer >= growthTime) {
                 this.grown = true;
-                this.config.attackCooldown = 7500;
             }
         }
 
@@ -220,7 +219,7 @@ export class Plant {
             this.attackCooldown -= deltaTime;
             if (this.attackCooldown <= 0) {
                 this.produceSun(game);
-                this.attackCooldown = this.config.attackCooldown;
+                this.attackCooldown = this.grown ? 7500 : this.config.attackCooldown;
             }
         }
 

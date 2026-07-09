@@ -34,6 +34,8 @@ const AudioManager = {
     preloadSFX() {
         this.loadSFX('chomp_food', 'sounds/chomp_food.mp3');
         this.loadSFX('chomp_crunch', 'sounds/chomp_crunch.mp3');
+        this.loadSFX('explosion', 'sounds/explosion.mp3');
+        this.loadSFX('plant_deploy', 'sounds/plant_deploy.mp3');
     },
 
     init() {
@@ -349,115 +351,73 @@ const AudioManager = {
     },
 
     playPlantShoot() {
-        this.init();
-        const ctx = this.audioContext;
-        const now = ctx.currentTime;
-
-        const osc = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const reverb = this.createReverbNode();
-        const reverbGain = ctx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(1500, now);
-        osc.frequency.exponentialRampToValueAtTime(600, now + 0.06);
-
-        osc2.type = 'square';
-        osc2.frequency.setValueAtTime(3000, now);
-        osc2.frequency.exponentialRampToValueAtTime(1200, now + 0.04);
-
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.3, now + 0.003);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-
-        reverbGain.gain.value = 0.1;
-
-        osc.connect(gain);
-        osc2.connect(gain);
-        gain.connect(ctx.destination);
-        gain.connect(reverb);
-        reverb.connect(reverbGain);
-        reverbGain.connect(ctx.destination);
-
-        osc.start(now);
-        osc2.start(now);
-        osc.stop(now + 0.08);
-        osc2.stop(now + 0.08);
     },
 
     playExplosion() {
         this.init();
         const ctx = this.audioContext;
-        const now = ctx.currentTime;
-        const duration = 0.8;
+        const buffer = this.sfxBuffers['explosion'];
 
-        const mainGain = ctx.createGain();
+        if (!buffer) {
+            this.loadSFX('explosion', 'sounds/explosion.mp3').then(buf => {
+                if (buf) this.playExplosion();
+            });
+            return;
+        }
+
+        const source = ctx.createBufferSource();
+        const gain = ctx.createGain();
         const reverb = this.createReverbNode();
         const reverbGain = ctx.createGain();
 
-        mainGain.gain.setValueAtTime(0, now);
-        mainGain.gain.linearRampToValueAtTime(this.sfxVolume * 0.9, now + 0.02);
-        mainGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        source.buffer = buffer;
+        source.playbackRate.value = 0.95 + Math.random() * 0.1;
 
-        reverbGain.gain.value = 0.4;
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.85, ctx.currentTime + 0.005);
+        gain.gain.setValueAtTime(this.sfxVolume * 0.7, ctx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
 
-        mainGain.connect(ctx.destination);
-        mainGain.connect(reverb);
+        reverbGain.gain.value = 0.3;
+
+        source.connect(gain);
+        gain.connect(ctx.destination);
+        gain.connect(reverb);
         reverb.connect(reverbGain);
         reverbGain.connect(ctx.destination);
 
-        const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * duration, ctx.sampleRate);
-        const data = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < data.length; i++) {
-            const t = i / data.length;
-            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 1.5);
+        source.start(ctx.currentTime);
+        source.stop(ctx.currentTime + 1.3);
+    },
+
+    playPlantDeploy() {
+        this.init();
+        const ctx = this.audioContext;
+        const buffer = this.sfxBuffers['plant_deploy'];
+
+        if (!buffer) {
+            this.loadSFX('plant_deploy', 'sounds/plant_deploy.mp3').then(buf => {
+                if (buf) this.playPlantDeploy();
+            });
+            return;
         }
-        const noiseSource = ctx.createBufferSource();
-        noiseSource.buffer = noiseBuffer;
 
-        const noiseFilter = ctx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.setValueAtTime(2000, now);
-        noiseFilter.frequency.exponentialRampToValueAtTime(80, now + duration);
+        const source = ctx.createBufferSource();
+        const gain = ctx.createGain();
 
-        const noiseGain = ctx.createGain();
-        noiseGain.gain.value = 0.7;
+        source.buffer = buffer;
+        source.playbackRate.value = 0.95 + Math.random() * 0.1;
 
-        noiseSource.connect(noiseFilter);
-        noiseFilter.connect(noiseGain);
-        noiseGain.connect(mainGain);
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.7, ctx.currentTime + 0.01);
+        gain.gain.setValueAtTime(this.sfxVolume * 0.6, ctx.currentTime + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
 
-        const subOsc = ctx.createOscillator();
-        subOsc.type = 'sine';
-        subOsc.frequency.setValueAtTime(150, now);
-        subOsc.frequency.exponentialRampToValueAtTime(30, now + 0.4);
+        source.connect(gain);
+        gain.connect(ctx.destination);
 
-        const subGain = ctx.createGain();
-        subGain.gain.setValueAtTime(0.5, now);
-        subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-        subOsc.connect(subGain);
-        subGain.connect(mainGain);
-
-        const midOsc = ctx.createOscillator();
-        midOsc.type = 'sawtooth';
-        midOsc.frequency.setValueAtTime(300, now);
-        midOsc.frequency.exponentialRampToValueAtTime(80, now + 0.3);
-
-        const midGain = ctx.createGain();
-        midGain.gain.setValueAtTime(0.3, now);
-        midGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-        midOsc.connect(midGain);
-        midGain.connect(mainGain);
-
-        noiseSource.start(now);
-        subOsc.start(now);
-        midOsc.start(now);
-        noiseSource.stop(now + duration);
-        subOsc.stop(now + 0.5);
-        midOsc.stop(now + 0.4);
+        source.start(ctx.currentTime);
+        source.stop(ctx.currentTime + 0.5);
     },
 
     playSunCollect() {

@@ -499,6 +499,7 @@ class Game {
         const plant = new Plant(plantType, row, col, this);
         this.plants.push(plant);
         plant.createElement();
+        AudioManager.playPlantDeploy();
         
         this.updateSunUI();
         this.startPlantCooldown(plantType);

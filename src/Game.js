@@ -157,8 +157,8 @@ export class Game {
     }
 
     updatePlants(deltaTime) {
-        for (const plant of this.plants) {
-            plant.update(deltaTime, this);
+        for (let i = this.plants.length - 1; i >= 0; i--) {
+            this.plants[i].update(deltaTime, this);
         }
     }
 

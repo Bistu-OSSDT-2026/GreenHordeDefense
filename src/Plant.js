@@ -149,6 +149,7 @@ export class Plant {
         this.exploding = false;
         this.explodeTimer = 0;
         this.targetZombie = null;
+        this.hasActivated = false;
         this.id = Date.now() + Math.random();
         this.element = null;
 
@@ -231,7 +232,8 @@ export class Plant {
             this.checkSquash(game);
         }
 
-        if (this.type === 'iceShroom') {
+        if (this.type === 'iceShroom' && !this.hasActivated) {
+            this.hasActivated = true;
             this.freezeAll(game);
         }
     }

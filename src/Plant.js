@@ -362,6 +362,11 @@ export class Plant {
             damage *= 0.7;
         }
 
+        const rules = SEASON_RULES[game.currentSeason];
+        if (rules.fireDamageMultiplier && PLANT_TYPES.FIRE.includes(this.type)) {
+            damage *= rules.fireDamageMultiplier;
+        }
+
         if (this.type === 'jalapeno') {
             for (const zombie of game.zombies) {
                 if (zombie.row === this.row) {

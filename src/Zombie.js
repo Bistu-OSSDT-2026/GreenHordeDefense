@@ -125,7 +125,7 @@ export class Zombie {
         if (plantType === 'wallnut') {
             damage = this.targetPlant.maxHealth / 30;
         } else {
-            damage = this.targetPlant.maxHealth / 3;
+            damage = this.targetPlant.maxHealth / 5;
         }
 
         this.targetPlant.takeDamage(damage);

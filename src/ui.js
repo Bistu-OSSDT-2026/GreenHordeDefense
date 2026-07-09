@@ -66,16 +66,40 @@ export function deselectAllPlantCards() {
     document.querySelectorAll('.plant-card').forEach(card => card.classList.remove('selected'));
 }
 
+const _cooldownTimers = {};
+
 export function startPlantCooldown(plantType, cooldownMs) {
+    cancelPlantCooldown(plantType);
     const cdElement = document.getElementById(`cd-${plantType}`);
     if (!cdElement) return;
     cdElement.style.height = '100%';
     const card = cdElement.parentElement;
     card.classList.add('disabled');
-    setTimeout(() => {
-        cdElement.style.height = '0%';
-        card.classList.remove('disabled');
+    _cooldownTimers[plantType] = setTimeout(() => {
+        finishPlantCooldown(plantType);
     }, cooldownMs);
+}
+
+export function finishPlantCooldown(plantType) {
+    cancelPlantCooldown(plantType);
+    const cdElement = document.getElementById(`cd-${plantType}`);
+    if (!cdElement) return;
+    cdElement.style.height = '0%';
+    const card = cdElement.parentElement;
+    card.classList.remove('disabled');
+}
+
+export function cancelPlantCooldown(plantType) {
+    if (_cooldownTimers[plantType]) {
+        clearTimeout(_cooldownTimers[plantType]);
+        delete _cooldownTimers[plantType];
+    }
+}
+
+export function cancelAllCooldowns() {
+    for (const type of Object.keys(_cooldownTimers)) {
+        cancelPlantCooldown(type);
+    }
 }
 
 // --- Shovel button ---

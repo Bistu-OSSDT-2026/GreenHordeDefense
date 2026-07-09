@@ -30,6 +30,8 @@ export class Game {
         this.levelManager = null;
         this.zombiesInWave = 0;
         this.zombiesSpawned = 0;
+        this.cooldowns = {};
+        this.pausedAt = null;
     }
 
     startGame(season, levelManager) {
@@ -51,6 +53,8 @@ export class Game {
         this.levelManager = levelManager;
         this.zombiesInWave = 0;
         this.zombiesSpawned = 0;
+        this.cooldowns = {};
+        this.pausedAt = null;
 
         const level = levelManager.getLevelById(season);
         this.weather = level ? level.weather : 'sunny';
@@ -366,7 +370,9 @@ export class Game {
         const plantConfig = Plant.getConfig(plantType);
         const rules = SEASON_RULES[this.currentSeason];
         const cooldown = plantConfig.cooldown * (rules.plantCooldownMultiplier || 1);
-        UI.startPlantCooldown(plantType, cooldown * 1000);
+        const cooldownMs = cooldown * 1000;
+        this.cooldowns[plantType] = Date.now() + cooldownMs;
+        UI.startPlantCooldown(plantType, cooldownMs);
     }
 
     checkGameOver() {
@@ -406,9 +412,30 @@ export class Game {
     togglePause() {
         if (this.state === GAME_STATES.PLAYING) {
             this.state = GAME_STATES.PAUSED;
+            this.pausedAt = Date.now();
             if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
             UI.showPauseOverlay();
         } else if (this.state === GAME_STATES.PAUSED) {
+            const pauseDuration = Date.now() - this.pausedAt;
+            this.pausedAt = null;
+
+            // Compensate sun drop and wave timers
+            this.lastSunDrop += pauseDuration;
+            this.waveTimer += pauseDuration;
+
+            // Restart active cooldowns with adjusted remaining time
+            const now = Date.now();
+            for (const [plantType, endTime] of Object.entries(this.cooldowns)) {
+                const remaining = endTime + pauseDuration - now;
+                if (remaining > 0) {
+                    this.cooldowns[plantType] = now + remaining;
+                    UI.startPlantCooldown(plantType, remaining);
+                } else {
+                    delete this.cooldowns[plantType];
+                    UI.finishPlantCooldown(plantType);
+                }
+            }
+
             this.state = GAME_STATES.PLAYING;
             this.startGameLoop();
             UI.hidePauseOverlay();
@@ -418,6 +445,8 @@ export class Game {
     backToMenu() {
         this.state = GAME_STATES.MENU;
         if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
+        this.cooldowns = {};
+        UI.cancelAllCooldowns();
         UI.hideAllOverlays();
         UI.showMenu();
     }

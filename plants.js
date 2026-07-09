@@ -6,7 +6,7 @@ class Plant {
             health: 100,
             attackCooldown: 7500,
             type: 'sun',
-            image: '95版/reanim/SunFlower_head.png'
+            image: '95版/reanim/SunFlower_head.gif'
         },
         peaShooter: {
             cost: 100,
@@ -15,7 +15,7 @@ class Plant {
             attackCooldown: 1400,
             damage: 20,
             type: 'shooter',
-            image: '95版/reanim/PeaShooter_Head.png'
+            image: '95版/reanim/PeaShooter_Head.gif'
         },
         icePea: {
             cost: 100,
@@ -25,7 +25,7 @@ class Plant {
             damage: 20,
             type: 'shooter',
             projectileType: 'icePea',
-            image: '95版/reanim/SnowPea_head.png'
+            image: '95版/reanim/SnowPea_head.gif'
         },
         doublePea: {
             cost: 200,
@@ -35,7 +35,7 @@ class Plant {
             damage: 20,
             type: 'shooter',
             doubleShot: true,
-            image: '95版/reanim/ThreePeater_head.png'
+            image: '95版/reanim/ThreePeater_head.gif'
         },
         firePea: {
             cost: 175,
@@ -45,7 +45,7 @@ class Plant {
             damage: 20,
             type: 'shooter',
             projectileType: 'firePea',
-            image: '95版/reanim/PeaShooter_Head.png'
+            image: '95版/reanim/PeaShooter_Head.gif'
         },
         melonPult: {
             cost: 300,
@@ -55,7 +55,7 @@ class Plant {
             damage: 80,
             type: 'thrower',
             projectileType: 'melon',
-            image: '95版/reanim/Melonpult_body.png'
+            image: '95版/reanim/Melonpult_body.gif'
         },
         cherryBomb: {
             cost: 150,
@@ -64,7 +64,7 @@ class Plant {
             damage: 1800,
             type: 'ash',
             explodeDelay: 1400,
-            image: '95版/reanim/CherryBomb_left1.png'
+            image: '95版/reanim/CherryBomb_left1.gif'
         },
         jalapeno: {
             cost: 125,
@@ -73,7 +73,7 @@ class Plant {
             damage: 1800,
             type: 'ash',
             explodeDelay: 1400,
-            image: '95版/reanim/Jalapeno_body.png'
+            image: '95版/reanim/Jalapeno_body.gif'
         },
         wallnut: {
             cost: 50,
@@ -81,7 +81,7 @@ class Plant {
             health: 60,
             type: 'defense',
             maxHealth: 60,
-            image: '95版/reanim/Wallnut_body.png'
+            image: '95版/reanim/Wallnut_body.gif'
         },
         squash: {
             cost: 50,
@@ -89,7 +89,7 @@ class Plant {
             health: 100,
             damage: 1800,
             type: 'melee',
-            image: '95版/reanim/Squash_body.png'
+            image: '95版/reanim/Squash_body.gif'
         },
         doomShroom: {
             cost: 125,
@@ -98,7 +98,7 @@ class Plant {
             damage: 1800,
             type: 'ash',
             explodeDelay: 1400,
-            image: '95版/reanim/DoomShroom_body.png'
+            image: '95版/reanim/DoomShroom_body.gif'
         },
         sunShroom: {
             cost: 25,
@@ -108,7 +108,7 @@ class Plant {
             type: 'sun',
             grows: true,
             growthTime: 20000,
-            image: '95版/reanim/SunShroom_head.png'
+            image: '95版/reanim/SunShroom_head.gif'
         },
         puffShroom: {
             cost: 0,
@@ -117,14 +117,14 @@ class Plant {
             attackCooldown: 1400,
             damage: 20,
             type: 'shooter',
-            image: '95版/reanim/PuffShroom_head.png'
+            image: '95版/reanim/PuffShroom_head.gif'
         },
         iceShroom: {
             cost: 75,
             cooldown: 30,
             health: 100,
             type: 'ice',
-            image: '95版/reanim/IceShroom_body.png'
+            image: '95版/reanim/IceShroom_body.gif'
         }
     };
 

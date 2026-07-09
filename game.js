@@ -154,7 +154,7 @@ class Game {
         sunElement.style.left = `${x}px`;
         sunElement.style.top = '-50px';
         sunElement.style.setProperty('--target-y', `${targetY}px`);
-        sunElement.innerHTML = `<img src="95版/images/Sun1.png" style="width:100%;height:100%;">`;
+        sunElement.innerHTML = `<img src="95版/images/Sun1.gif" style="width:100%;height:100%;">`;
         sunElement.onclick = () => this.collectSun(sunItem.id);
         document.getElementById('lawn-container').appendChild(sunElement);
         
@@ -187,7 +187,7 @@ class Game {
         sunElement.style.left = `${x}px`;
         sunElement.style.top = `${y - 80}px`;
         sunElement.style.setProperty('--target-y', '80px');
-        sunElement.innerHTML = `<img src="95版/images/Sun1.png" style="width:100%;height:100%;">`;
+        sunElement.innerHTML = `<img src="95版/images/Sun1.gif" style="width:100%;height:100%;">`;
         sunElement.onclick = () => this.collectSun(sunItem.id);
         document.getElementById('lawn-container').appendChild(sunElement);
         

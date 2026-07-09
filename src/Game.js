@@ -28,6 +28,8 @@ export class Game {
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
         this.levelManager = null;
+        this.zombiesInWave = 0;
+        this.zombiesSpawned = 0;
     }
 
     startGame(season, levelManager) {
@@ -47,6 +49,8 @@ export class Game {
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
         this.levelManager = levelManager;
+        this.zombiesInWave = 0;
+        this.zombiesSpawned = 0;
 
         const level = levelManager.getLevelById(season);
         this.weather = level ? level.weather : 'sunny';
@@ -232,6 +236,10 @@ export class Game {
         const waveConfig = level ? level.waves[this.currentWave - 1] : null;
         if (!waveConfig) return;
 
+        const totalZombies = waveConfig.zombies.reduce((sum, g) => sum + g.count, 0);
+        this.zombiesInWave = totalZombies;
+        this.zombiesSpawned = 0;
+
         if (waveConfig.isBigWave) {
             this.bigWaveCount++;
             UI.showBigWaveWarning();
@@ -257,6 +265,7 @@ export class Game {
     spawnZombie(type, row) {
         const zombie = this.createZombie(type, row);
         this.zombies.push(zombie);
+        this.zombiesSpawned++;
         zombie.createElement();
     }
 
@@ -365,6 +374,22 @@ export class Game {
     checkGameOver() {
         if (this.zombies.some(z => z.x < -100 && z.hasEnteredHouse && !this.lawnmowers[z.row])) {
             this.loseGame();
+        }
+    }
+
+    checkWaveTransition() {
+        if (this.currentWave > this.maxWaves) return;
+        if (this.state !== GAME_STATES.PLAYING) return;
+        if (this.zombiesSpawned < this.zombiesInWave) return;
+        if (this.zombies.length > 0) return;
+
+        const now = Date.now();
+        if (now - this.waveTimer < this.waveDelay) return;
+
+        if (this.currentWave >= this.maxWaves) {
+            this.winGame();
+        } else {
+            this.startWave();
         }
     }
 

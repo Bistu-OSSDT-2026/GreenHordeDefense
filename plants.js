@@ -12,16 +12,16 @@ class Plant {
             cost: 100,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             image: '95版/reanim/PeaShooter_Head.gif'
         },
         icePea: {
-            cost: 100,
+            cost: 175,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             projectileType: 'icePea',
@@ -31,7 +31,7 @@ class Plant {
             cost: 200,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             doubleShot: true,
@@ -41,7 +41,7 @@ class Plant {
             cost: 175,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             projectileType: 'firePea',
@@ -114,7 +114,7 @@ class Plant {
             cost: 0,
             cooldown: 7.5,
             health: 100,
-            attackCooldown: 1400,
+            attackCooldown: 2800,
             damage: 20,
             type: 'shooter',
             image: '95版/reanim/PuffShroom_head.gif'
@@ -221,8 +221,18 @@ class Plant {
             }
         }
 
-        if (this.config.type === 'ash' && !this.exploding) {
-            this.checkExplode(game);
+        if (this.config.type === 'ash') {
+            if (!this.exploding) {
+                this.exploding = true;
+                this.explodeTimer = this.config.explodeDelay;
+                if (this.element) {
+                    this.element.classList.add('exploding');
+                }
+            }
+            this.explodeTimer -= deltaTime;
+            if (this.explodeTimer <= 0) {
+                this.explode(game);
+            }
         }
 
         if (this.type === 'squash') {
@@ -230,7 +240,12 @@ class Plant {
         }
 
         if (this.type === 'iceShroom') {
-            this.freezeAll(game);
+            if (!this.frozen) {
+                this.frozen = true;
+                setTimeout(() => {
+                    this.freezeAll(game);
+                }, 1400);
+            }
         }
     }
 
@@ -395,7 +410,8 @@ class Plant {
     freezeAll(game) {
         for (const zombie of game.zombies) {
             zombie.slowed = true;
-            zombie.slowTimer = 5000;
+            zombie.frozen = true;
+            zombie.slowTimer = 6000;
         }
         this.destroy();
     }

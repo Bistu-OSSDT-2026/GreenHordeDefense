@@ -26,7 +26,7 @@ class Zombie {
     calculateY(row) {
         const containerHeight = document.getElementById('lawn-container').clientHeight;
         const rowHeight = containerHeight / 5;
-        return rowHeight * row + rowHeight / 2 - 40;
+        return rowHeight * row + rowHeight - 120;
     }
 
     createElement() {
@@ -65,9 +65,10 @@ class Zombie {
             this.slowTimer -= deltaTime;
             if (this.slowTimer <= 0) {
                 this.slowed = false;
+                this.frozen = false;
                 this.speed = this.baseSpeed;
             } else {
-                this.speed = this.baseSpeed * 0.5;
+                this.speed = this.frozen ? 0 : this.baseSpeed * 0.5;
             }
         }
 

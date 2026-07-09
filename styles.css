@@ -315,6 +315,8 @@ body {
     height: 120px;
     z-index: 5;
     transition: left 0.1s linear;
+    transform: scale(1.8);
+    transform-origin: bottom center;
 }
 
 .zombie img {

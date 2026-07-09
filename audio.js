@@ -493,24 +493,28 @@ const AudioManager = {
     playChomp() {
         this.init();
 
-        const playAudio = (src, volume, delay = 0) => {
-            const audio = new Audio(src);
-            audio.volume = volume * this.sfxVolume;
-            audio.playbackRate = 0.75 + Math.random() * 0.15;
+        const playSingleChomp = (delay = 0) => {
+            const audio1 = new Audio('sounds/chomp_food.mp3');
+            const audio2 = new Audio('sounds/chomp_crunch.mp3');
+
+            audio1.volume = 0.45 * this.sfxVolume;
+            audio2.volume = 0.3 * this.sfxVolume;
+
+            audio1.playbackRate = 0.85 + Math.random() * 0.1;
+            audio2.playbackRate = 0.85 + Math.random() * 0.1;
+
             if (delay > 0) {
                 setTimeout(() => {
-                    audio.play().catch(() => {});
+                    audio1.play().catch(() => {});
+                    setTimeout(() => audio2.play().catch(() => {}), 25);
                 }, delay);
             } else {
-                audio.play().catch(() => {});
+                audio1.play().catch(() => {});
+                setTimeout(() => audio2.play().catch(() => {}), 25);
             }
         };
 
-        const chomps = 2 + Math.floor(Math.random() * 2);
-        for (let i = 0; i < chomps; i++) {
-            const delay = i * (250 + Math.random() * 100);
-            playAudio('sounds/chomp_food.mp3', 0.7, delay);
-            playAudio('sounds/chomp_crunch.mp3', 0.5, delay + 30 + Math.random() * 30);
-        }
+        playSingleChomp(0);
+        playSingleChomp(300 + Math.random() * 100);
     }
 };

@@ -3,6 +3,7 @@
 *.mp3
 !sounds/*.mp3
 *.ogg
+!sounds/*.ogg
 
 *.swf
 *.au

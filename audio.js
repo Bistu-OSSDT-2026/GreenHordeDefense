@@ -492,36 +492,19 @@ const AudioManager = {
 
     playChomp() {
         this.init();
-        const ctx = this.audioContext;
-        const now = ctx.currentTime;
 
-        const playOneChomp = (offset) => {
-            const t = now + offset;
-            const bufferSize = ctx.sampleRate * 0.08;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                const p = i / bufferSize;
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-p * 15) * (0.5 + Math.random() * 0.5);
+        const playAudio = (src, volume, delay = 0) => {
+            const audio = new Audio(src);
+            audio.volume = volume * this.sfxVolume;
+            audio.playbackRate = 0.9 + Math.random() * 0.2;
+            audio.currentTime = delay;
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {});
             }
-            const source = ctx.createBufferSource();
-            source.buffer = buffer;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 1200 + Math.random() * 400;
-            filter.Q.value = 0.8;
-
-            const gain = ctx.createGain();
-            gain.gain.value = this.sfxVolume * 0.5;
-
-            source.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            source.start(t);
         };
 
-        playOneChomp(0);
-        playOneChomp(0.08);
+        playAudio('sounds/chomp_food.mp3', 0.8);
+        playAudio('sounds/chomp_crunch.mp3', 0.6, 0.05);
     }
 };

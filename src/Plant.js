@@ -464,7 +464,7 @@ export class Projectile {
     }
 
     update(deltaTime) {
-        this.x += this.speed;
+        this.x += this.speed * deltaTime * 0.06;
     }
 
     render() {

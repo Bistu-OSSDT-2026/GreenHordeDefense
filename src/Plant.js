@@ -224,8 +224,8 @@ export class Plant {
             }
         }
 
-        if (this.config.type === 'ash' && !this.exploding) {
-            this.checkExplode(game);
+        if (this.config.type === 'ash') {
+            this.checkExplode(game, deltaTime);
         }
 
         if (this.type === 'squash') {
@@ -287,7 +287,7 @@ export class Plant {
         this.attackCooldown = this.config.attackCooldown;
     }
 
-    checkExplode(game) {
+    checkExplode(game, deltaTime) {
         if (!this.exploding) {
             this.exploding = true;
             this.explodeTimer = this.config.explodeDelay;
@@ -297,11 +297,9 @@ export class Plant {
             }
         }
 
-        if (this.exploding) {
-            this.explodeTimer -= 16;
-            if (this.explodeTimer <= 0) {
-                this.explode(game);
-            }
+        this.explodeTimer -= deltaTime;
+        if (this.explodeTimer <= 0) {
+            this.explode(game);
         }
     }
 

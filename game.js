@@ -622,18 +622,24 @@ class Game {
         
         switch(season) {
             case 'spring':
+                container.style.filter = 'hue-rotate(30deg) saturate(1.2)';
                 this.createRain();
                 break;
             case 'summer':
+                container.style.filter = 'sepia(0.2) saturate(1.3) brightness(1.1)';
                 this.createSummerGlow();
                 break;
             case 'autumn':
+                container.style.filter = 'sepia(0.4) hue-rotate(-30deg) saturate(1.2)';
                 this.createLeaves();
                 this.createFog();
                 break;
             case 'winter':
+                container.style.filter = 'hue-rotate(180deg) saturate(0.8) brightness(1.1) contrast(0.9)';
                 this.createSnowflakes();
                 break;
+            default:
+                container.style.filter = '';
         }
     }
 

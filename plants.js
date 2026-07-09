@@ -55,7 +55,7 @@ class Plant {
             damage: 80,
             type: 'thrower',
             projectileType: 'melon',
-            image: '95版/reanim/Melonpult_body.gif'
+            image: '95版/reanim/Melonpult_body.webp'
         },
         cherryBomb: {
             cost: 150,

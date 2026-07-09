@@ -122,8 +122,8 @@ body {
 }
 
 .sun-icon {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     animation: sunPulse 2s infinite;
 }
 
@@ -228,6 +228,7 @@ body {
     position: relative;
     background: url('95版/images/background1.jpg') center/cover;
     overflow: hidden;
+    transition: filter 0.5s ease;
 }
 
 #lawn {
@@ -644,8 +645,8 @@ body {
 
 .sun-item {
     position: absolute;
-    width: 50px;
-    height: 50px;
+    width: 100px;
+    height: 100px;
     z-index: 15;
     cursor: pointer;
     transition: transform 0.2s ease;

@@ -129,11 +129,11 @@ const AudioManager = {
 
         const clipDuration = 1.5 / pitch;
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.85, now + 0.1);
-        gain.gain.setValueAtTime(this.sfxVolume * 0.8, now + clipDuration * 0.5);
+        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.45, now + 0.1);
+        gain.gain.setValueAtTime(this.sfxVolume * 0.4, now + clipDuration * 0.5);
         gain.gain.exponentialRampToValueAtTime(0.001, now + clipDuration - 0.1);
 
-        reverbGain.gain.value = 0.2;
+        reverbGain.gain.value = 0.12;
 
         source.connect(gain);
         gain.connect(ctx.destination);
@@ -161,10 +161,10 @@ const AudioManager = {
             source.playbackRate.value = pitch;
             const clipDuration = 1.5 / pitch;
             gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.9, ctx.currentTime + 0.08);
-            gain.gain.setValueAtTime(this.sfxVolume * 0.85, ctx.currentTime + clipDuration * 0.5);
+            gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.55, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(this.sfxVolume * 0.5, ctx.currentTime + clipDuration * 0.5);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + clipDuration - 0.1);
-            reverbGain.gain.value = 0.25;
+            reverbGain.gain.value = 0.15;
             source.connect(gain);
             gain.connect(ctx.destination);
             gain.connect(reverb);

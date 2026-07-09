@@ -90,6 +90,7 @@ class Game {
         
         const level = levelManager.getLevelById(season);
         this.weather = level ? level.weather : 'sunny';
+        this.maxWaves = level ? level.waves.length : 5;
         
         this.updateUI();
         this.showSeasonEffect(season);
@@ -145,7 +146,7 @@ class Game {
             y: -50,
             targetY,
             state: 'falling',
-            rotation: 0
+            createdAt: Date.now()
         };
         this.sunItems.push(sunItem);
         
@@ -178,7 +179,7 @@ class Game {
             y: y - 80,
             targetY: y,
             state: 'falling',
-            rotation: 0
+            createdAt: Date.now()
         };
         this.sunItems.push(sunItem);
         
@@ -276,20 +277,18 @@ class Game {
     }
 
     updateSunItems(deltaTime) {
+        const now = Date.now();
+        const SUN_EXPIRE_TIME = 8000;
         for (let i = this.sunItems.length - 1; i >= 0; i--) {
             const sun = this.sunItems[i];
-            sun.y += sun.vy;
-            sun.rotation += 0.05;
-            
-            const element = document.getElementById(`sun-${sun.id}`);
-            if (element) {
-                element.style.top = `${sun.y}px`;
-                element.style.transform = `rotate(${sun.rotation}deg)`;
-            }
-            
-            if (sun.y > window.innerHeight) {
+            if (sun.state === 'stationary' && now - sun.createdAt > SUN_EXPIRE_TIME + 3000) {
                 this.sunItems.splice(i, 1);
-                if (element) element.remove();
+                const element = document.getElementById(`sun-${sun.id}`);
+                if (element) {
+                    element.style.transition = 'opacity 0.5s';
+                    element.style.opacity = '0';
+                    setTimeout(() => element.remove(), 500);
+                }
             }
         }
     }

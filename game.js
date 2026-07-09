@@ -208,6 +208,7 @@ class Game {
             const element = document.getElementById(`sun-${id}`);
             if (element) element.remove();
             this.updateSunUI();
+            AudioManager.playSunCollect();
         }
     }
 
@@ -335,6 +336,8 @@ class Game {
         warning.textContent = '一大波僵尸即将来袭！';
         document.getElementById('lawn-container').appendChild(warning);
         
+        AudioManager.playZombieGroan();
+        setTimeout(() => AudioManager.playZombieGroan(), 500);
         setTimeout(() => warning.remove(), 3000);
     }
 

@@ -58,6 +58,10 @@ class Zombie {
             <div class="zombie-dead" style="display:none;"></div>
         `;
         document.getElementById('lawn-container').appendChild(this.element);
+        
+        setTimeout(() => {
+            AudioManager.playZombieGroan();
+        }, 300);
     }
 
     update(deltaTime, game) {
@@ -81,6 +85,7 @@ class Zombie {
             if (this.eatTimer >= attackInterval) {
                 this.eatTimer = 0;
                 this.eatPlant(game);
+                AudioManager.playChomp();
             }
         }
 
@@ -92,6 +97,15 @@ class Zombie {
             if (this.element) {
                 this.element.classList.add('enraged');
             }
+        }
+
+        if (!this.groanTimer) {
+            this.groanTimer = Math.random() * 5000 + 3000;
+        }
+        this.groanTimer -= deltaTime;
+        if (this.groanTimer <= 0 && this.health > 0) {
+            AudioManager.playZombieGroan();
+            this.groanTimer = Math.random() * 8000 + 5000;
         }
     }
 

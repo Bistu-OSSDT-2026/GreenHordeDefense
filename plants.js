@@ -269,6 +269,7 @@ class Plant {
             }, 100);
         }
 
+        AudioManager.playPlantShoot();
         this.attackCooldown = this.config.attackCooldown;
     }
 
@@ -342,6 +343,7 @@ class Plant {
 
         setTimeout(() => explosion.remove(), 500);
         
+        AudioManager.playExplosion();
         this.destroy();
     }
 
@@ -353,6 +355,8 @@ class Plant {
         document.getElementById('lawn-container').appendChild(explosion);
 
         setTimeout(() => explosion.remove(), 500);
+
+        AudioManager.playExplosion();
 
         let damage = this.config.damage;
         

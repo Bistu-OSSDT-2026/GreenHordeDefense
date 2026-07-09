@@ -123,7 +123,6 @@ class Game {
         this.updateSunItems(deltaTime);
         this.checkWaveTransition();
         this.checkGameOver();
-        this.updateCooldowns(deltaTime);
     }
 
     updateSunDrop() {
@@ -334,7 +333,7 @@ class Game {
 
     checkWaveTransition() {
         if (this.zombies.length === 0 && this.currentWave > 0) {
-            if (this.currentWave >= this.maxWaves && this.bigWaveCount >= 2) {
+            if (this.currentWave >= this.maxWaves) {
                 this.winGame();
                 return;
             }
@@ -477,14 +476,6 @@ class Game {
                 cdElement.style.height = '0%';
                 card.classList.remove('disabled');
             }, cooldown * 1000);
-        }
-    }
-
-    updateCooldowns(deltaTime) {
-        for (const plant of this.plants) {
-            if (plant.attackCooldown > 0) {
-                plant.attackCooldown -= deltaTime;
-            }
         }
     }
 

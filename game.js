@@ -336,8 +336,7 @@ class Game {
         warning.textContent = '一大波僵尸即将来袭！';
         document.getElementById('lawn-container').appendChild(warning);
         
-        AudioManager.playZombieGroan();
-        setTimeout(() => AudioManager.playZombieGroan(), 500);
+        AudioManager.playZombieWaveWarn();
         setTimeout(() => warning.remove(), 3000);
     }
 

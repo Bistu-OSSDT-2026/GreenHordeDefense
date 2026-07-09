@@ -1,7 +1,47 @@
 let selectedPlant = null;
 let shovelMode = false;
+let selectedBGM = 'day';
+let isPreviewingBGM = false;
+
+function selectBGM(track) {
+    selectedBGM = track;
+    AudioManager.playClick();
+    if (isPreviewingBGM) {
+        AudioManager.stopBGM(() => {
+            AudioManager.startBGM(track);
+        });
+    }
+}
+
+function toggleBGMPreview() {
+    const btn = document.getElementById('bgmPreviewBtn');
+    AudioManager.playClick();
+
+    if (isPreviewingBGM) {
+        AudioManager.stopBGM();
+        isPreviewingBGM = false;
+        btn.textContent = '▶ 试听';
+    } else {
+        AudioManager.startBGM(selectedBGM);
+        isPreviewingBGM = true;
+        btn.textContent = '⏹ 停止';
+    }
+}
+
+function updateMenuBGMVolume(val) {
+    document.getElementById('menuBGMVolumeValue').textContent = val + '%';
+    AudioManager.setBGMVolume(val / 100);
+}
 
 function startGame(season) {
+    AudioManager.playClick();
+    if (isPreviewingBGM) {
+        AudioManager.stopBGM(() => {
+            AudioManager.startBGM(selectedBGM);
+        });
+    } else {
+        AudioManager.startBGM(selectedBGM);
+    }
     game = new Game();
     game.startGame(season);
     SeasonEffects.applySeasonEffects(season);
@@ -16,6 +56,7 @@ function selectPlant(plantType) {
         return;
     }
 
+    AudioManager.playClick();
     shovelMode = false;
     updateShovelUI();
     
@@ -30,6 +71,7 @@ function selectPlant(plantType) {
 }
 
 function toggleShovel() {
+    AudioManager.playClick();
     shovelMode = !shovelMode;
     updateShovelUI();
     if (shovelMode) {
@@ -66,18 +108,25 @@ function handleCellClick(row, col) {
 
 function togglePause() {
     if (game) {
+        AudioManager.playClick();
         game.togglePause();
     }
 }
 
 function backToMenu() {
     if (game) {
+        AudioManager.playClick();
+        AudioManager.stopBGM();
+        isPreviewingBGM = false;
+        const btn = document.getElementById('bgmPreviewBtn');
+        if (btn) btn.textContent = '▶ 试听';
         game.backToMenu();
     }
 }
 
 function restartGame() {
     if (game) {
+        AudioManager.playClick();
         selectedPlant = null;
         shovelMode = false;
         updateShovelUI();
@@ -101,10 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
             togglePause();
         }
     });
-});
 
-function playSound(soundName) {
-    const audio = new Audio(`95版/sounds/${soundName}.ogg`);
-    audio.volume = 0.3;
-    audio.play().catch(() => {});
-}
+    document.addEventListener('click', () => {
+        AudioManager.init();
+        AudioManager.preloadSFX();
+    }, { once: true });
+});

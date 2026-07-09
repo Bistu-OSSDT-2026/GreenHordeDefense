@@ -21,6 +21,7 @@ class Zombie {
         this.slowed = false;
         this.slowTimer = 0;
         this.animationFrame = 0;
+        this.groanTimer = Math.random() * 5000 + 3000;
     }
 
     calculateY(row) {
@@ -68,6 +69,10 @@ class Zombie {
             <div class="zombie-dead" style="display:none;"></div>
         `;
         document.getElementById('lawn-container').appendChild(this.element);
+        
+        setTimeout(() => {
+            AudioManager.playZombieGroan();
+        }, 300);
     }
 
     update(deltaTime, game) {
@@ -107,6 +112,7 @@ class Zombie {
             if (this.eatTimer >= attackInterval) {
                 this.eatTimer = 0;
                 this.eatPlant(game);
+                AudioManager.playChomp();
             }
         }
 
@@ -118,6 +124,12 @@ class Zombie {
             if (this.element) {
                 this.element.classList.add('enraged');
             }
+        }
+
+        this.groanTimer -= deltaTime;
+        if (this.groanTimer <= 0 && this.health > 0) {
+            AudioManager.playZombieGroan();
+            this.groanTimer = Math.random() * 8000 + 5000;
         }
     }
 

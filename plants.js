@@ -287,6 +287,7 @@ class Plant {
             }, 100);
         }
 
+        AudioManager.playPlantShoot();
         this.attackCooldown = this.config.attackCooldown;
     }
 
@@ -353,6 +354,7 @@ class Plant {
     }
 
     explode(game) {
+        AudioManager.playExplosion();
         const explosion = document.createElement('div');
         explosion.className = 'explosion';
         explosion.style.left = `${this.x - 50}px`;

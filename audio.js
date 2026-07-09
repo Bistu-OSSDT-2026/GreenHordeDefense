@@ -496,15 +496,21 @@ const AudioManager = {
         const playAudio = (src, volume, delay = 0) => {
             const audio = new Audio(src);
             audio.volume = volume * this.sfxVolume;
-            audio.playbackRate = 0.9 + Math.random() * 0.2;
-            audio.currentTime = delay;
-            const playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {});
+            audio.playbackRate = 0.75 + Math.random() * 0.15;
+            if (delay > 0) {
+                setTimeout(() => {
+                    audio.play().catch(() => {});
+                }, delay);
+            } else {
+                audio.play().catch(() => {});
             }
         };
 
-        playAudio('sounds/chomp_food.mp3', 0.8);
-        playAudio('sounds/chomp_crunch.mp3', 0.6, 0.05);
+        const chomps = 2 + Math.floor(Math.random() * 2);
+        for (let i = 0; i < chomps; i++) {
+            const delay = i * (250 + Math.random() * 100);
+            playAudio('sounds/chomp_food.mp3', 0.7, delay);
+            playAudio('sounds/chomp_crunch.mp3', 0.5, delay + 30 + Math.random() * 30);
+        }
     }
 };

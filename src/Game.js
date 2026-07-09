@@ -32,6 +32,9 @@ export class Game {
         this.zombiesSpawned = 0;
         this.cooldowns = {};
         this.pausedAt = null;
+        this.spawnQueue = [];
+        this.spawnQueueIndex = 0;
+        this.spawnTimer = 0;
     }
 
     startGame(season, levelManager) {
@@ -55,6 +58,9 @@ export class Game {
         this.zombiesSpawned = 0;
         this.cooldowns = {};
         this.pausedAt = null;
+        this.spawnQueue = [];
+        this.spawnQueueIndex = 0;
+        this.spawnTimer = 0;
 
         const level = levelManager.getLevelById(season);
         this.weather = level ? level.weather : 'sunny';
@@ -85,6 +91,7 @@ export class Game {
 
     update(deltaTime) {
         this.updateSunDrop();
+        this.updateSpawns(deltaTime);
         this.updatePlants(deltaTime);
         this.updateZombies(deltaTime);
         this.updateProjectiles(deltaTime);
@@ -244,25 +251,32 @@ export class Game {
         this.zombiesInWave = totalZombies;
         this.zombiesSpawned = 0;
 
+        // Build spawn queue from wave config
+        this.spawnQueue = [];
+        let delay = 0;
+        for (const group of waveConfig.zombies) {
+            for (let i = 0; i < group.count; i++) {
+                this.spawnQueue.push({ type: group.type, row: Math.floor(Math.random() * 5), delay });
+                delay += 3000;
+            }
+        }
+        this.spawnQueueIndex = 0;
+        this.spawnTimer = 0;
+
         if (waveConfig.isBigWave) {
             this.bigWaveCount++;
             UI.showBigWaveWarning();
         }
-
-        this.spawnZombies(waveConfig);
     }
 
-    spawnZombies(waveConfig) {
-        let delay = 0;
-        for (const group of waveConfig.zombies) {
-            for (let i = 0; i < group.count; i++) {
-                setTimeout(() => {
-                    if (this.state !== GAME_STATES.PLAYING) return;
-                    const row = Math.floor(Math.random() * 5);
-                    this.spawnZombie(group.type, row);
-                }, delay);
-                delay += 3000;
-            }
+    updateSpawns(deltaTime) {
+        if (this.spawnQueueIndex >= this.spawnQueue.length) return;
+        this.spawnTimer += deltaTime;
+        while (this.spawnQueueIndex < this.spawnQueue.length &&
+               this.spawnTimer >= this.spawnQueue[this.spawnQueueIndex].delay) {
+            const entry = this.spawnQueue[this.spawnQueueIndex];
+            this.spawnZombie(entry.type, entry.row);
+            this.spawnQueueIndex++;
         }
     }
 

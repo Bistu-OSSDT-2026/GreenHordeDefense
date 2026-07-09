@@ -1,0 +1,768 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-menu {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+#game-menu h1 {
+    color: #fff;
+    font-size: 3rem;
+    margin-bottom: 40px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.season-select {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.season-btn {
+    padding: 20px 40px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.season-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.season-btn.spring {
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+.season-btn.summer {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.season-btn.autumn {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+.season-btn.winter {
+    background: linear-gradient(135deg, #67e8f9 0%, #22d3ee 100%);
+}
+
+.rules-link {
+    margin-top: 30px;
+}
+
+.rules-link a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.rules-link a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#game-area {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#game-header {
+    height: 80px;
+    background: linear-gradient(135deg, #1e3a5f 0%, #1a365d 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 3px solid #2d5a87;
+}
+
+.sun-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sun-icon {
+    width: 40px;
+    height: 40px;
+    animation: sunPulse 2s infinite;
+}
+
+@keyframes sunPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+#sun-count {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.wave-info, .season-info {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+#pause-btn {
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#pause-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+#plant-selector {
+    height: 120px;
+    background: linear-gradient(135deg, #2d5a87 0%, #1e3a5f 100%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    overflow-x: auto;
+    border-bottom: 3px solid #1a365d;
+}
+
+.plant-card {
+    width: 80px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.plant-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.plant-card.selected {
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.plant-card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.plant-icon {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.plant-card[data-plant="firePea"] .plant-icon {
+    width: 100px;
+    height: 100px;
+    margin: -25px auto;
+    display: block;
+}
+
+.plant-cost {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffd700;
+}
+
+.plant-cooldown {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 0 0 10px 10px;
+    transition: height 0.1s linear;
+}
+
+#lawn-container {
+    flex: 1;
+    position: relative;
+    background: url('95版/images/background1.jpg') center/cover;
+    overflow: hidden;
+}
+
+#lawn {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.row {
+    flex: 1;
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.cell {
+    flex: 1;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    background: rgba(34, 139, 34, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.cell:hover {
+    background: rgba(34, 139, 34, 0.5);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.cell.has-plant {
+    background: rgba(34, 139, 34, 0.7);
+}
+
+.plant-in-cell {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.plant-in-cell.fire-pea {
+    width: 120%;
+    height: 120%;
+    transform: translate(-10%, -10%);
+}
+
+.lawnmower-row {
+    position: absolute;
+    left: 0;
+    width: 80px;
+    height: calc(20% - 3px);
+    z-index: 10;
+}
+
+.lawnmower-row[data-row="0"] { top: 10px; }
+.lawnmower-row[data-row="1"] { top: calc(20% + 7px); }
+.lawnmower-row[data-row="2"] { top: calc(40% + 4px); }
+.lawnmower-row[data-row="3"] { top: calc(60% + 1px); }
+.lawnmower-row[data-row="4"] { top: calc(80% - 2px); }
+
+.lawnmower {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.lawnmower.active {
+    opacity: 1;
+}
+
+.lawnmower.triggered {
+    animation: lawnmowerMove 3s linear forwards;
+}
+
+@keyframes lawnmowerMove {
+    0% { left: 0; }
+    100% { left: calc(100% - 80px); }
+}
+
+.zombie {
+    position: absolute;
+    width: 140px;
+    height: 168px;
+    z-index: 5;
+    transition: left 0.1s linear;
+}
+
+.zombie img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.projectile {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    z-index: 8;
+    transition: left 0.05s linear;
+}
+
+.projectile.pea {
+    background: #22c55e;
+    border-radius: 50%;
+    animation: peaPulse 0.2s ease-in-out infinite;
+}
+
+.projectile.icePea {
+    background: #67e8f9;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(103, 232, 249, 0.5);
+    animation: iceGlow 0.3s ease-in-out infinite;
+}
+
+.projectile.firePea {
+    background: #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+    animation: fireGlow 0.2s ease-in-out infinite;
+}
+
+.projectile.melon {
+    background: #8b4513;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: melonSpin 0.3s linear infinite;
+}
+
+@keyframes peaPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes iceGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(103, 232, 249, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(103, 232, 249, 0.8); }
+}
+
+@keyframes fireGlow {
+    0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
+    50% { box-shadow: 0 0 25px rgba(239, 68, 68, 1); }
+}
+
+@keyframes melonSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.sun-item {
+    position: absolute;
+    width: 112px;
+    height: 112px;
+    z-index: 15;
+    animation: sunFall 5s ease-in forwards;
+    cursor: pointer;
+}
+
+@keyframes sunFall {
+    0% { transform: translateY(-100px); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+#game-over, #pause-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 100;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+#game-over h2, #pause-overlay h2 {
+    color: #fff;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+#game-over-message {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+#game-over button, #pause-overlay button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    background: #22c55e;
+    color: #fff;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease;
+}
+
+#game-over button:hover, #pause-overlay button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.season-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.spring-effect {
+    background: rgba(74, 222, 128, 0.1);
+}
+
+.summer-effect {
+    background: rgba(251, 191, 36, 0.1);
+    animation: summerHeat 3s infinite;
+}
+
+@keyframes summerHeat {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.2; }
+}
+
+.autumn-effect {
+    background: rgba(251, 146, 60, 0.1);
+}
+
+.winter-effect {
+    background: rgba(103, 232, 249, 0.1);
+    animation: winterSnow 5s infinite;
+}
+
+@keyframes winterSnow {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 1000px; }
+}
+
+.leaf {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #fb923c;
+    border-radius: 50% 0 50% 50%;
+    animation: leafFall 10s linear infinite;
+}
+
+@keyframes leafFall {
+    0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.snowflake {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-radius: 50%;
+    animation: snowFall 8s linear infinite;
+}
+
+@keyframes snowFall {
+    0% {
+        transform: translateY(-20px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+.explosion {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #fbbf24 0%, #ef4444 50%, transparent 70%);
+    border-radius: 50%;
+    animation: explode 0.5s ease-out forwards;
+    z-index: 50;
+}
+
+@keyframes explode {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 1200px) {
+    .plant-card {
+        width: 60px;
+        height: 80px;
+    }
+    .plant-icon {
+        width: 35px;
+        height: 35px;
+    }
+    .plant-cost {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    #game-header {
+        height: 60px;
+    }
+    .sun-icon {
+        width: 30px;
+        height: 30px;
+    }
+    #sun-count {
+        font-size: 1.5rem;
+    }
+    .wave-info, .season-info {
+        font-size: 1rem;
+    }
+    #plant-selector {
+        height: 100px;
+    }
+}
+
+.rain-drop {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, rgba(174, 194, 224, 0.8));
+    animation: rainFall 0.5s linear infinite;
+}
+
+@keyframes rainFall {
+    0% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
+
+.fog-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(180, 180, 180, 0.4);
+    z-index: 15;
+    pointer-events: none;
+    animation: fogMove 20s linear infinite;
+}
+
+@keyframes fogMove {
+    0% {
+        opacity: 0.3;
+        transform: translateX(-10%);
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateX(10%);
+    }
+    100% {
+        opacity: 0.3;
+        transform: translateX(-10%);
+    }
+}
+
+.summer-glow {
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.4) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 15;
+    animation: sunPulse 4s infinite;
+}
+
+@keyframes sunPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+.zombie-ash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('95版/reanim/Zombie_charred1.png') center/contain no-repeat;
+}
+
+.zombie.ash {
+    animation: ashDisappear 1s ease-out forwards;
+}
+
+@keyframes ashDisappear {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(0.9);
+        opacity: 0.7;
+    }
+    100% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+}
+
+.sun-item {
+    position: absolute;
+    width: 112px;
+    height: 112px;
+    z-index: 15;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.sun-item:hover {
+    transform: scale(1.2);
+}
+
+.sun-item.falling {
+    animation: sunFallToTarget 3s ease-in forwards;
+}
+
+.sun-item.stationary {
+    animation: sunIdle 2s infinite;
+}
+
+@keyframes sunFallToTarget {
+    0% {
+        transform: translateY(-100px) scale(0.8);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    70% {
+        transform: translateY(calc(var(--target-y) - 30px)) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(var(--target-y)) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes sunIdle {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.zombie.dead {
+    animation: zombieFall 0.5s ease-in forwards;
+}
+
+@keyframes zombieFall {
+    0% {
+        transform: rotate(0deg) translateY(0);
+        opacity: 1;
+    }
+    50% {
+        transform: rotate(45deg) translateY(20px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: rotate(90deg) translateY(40px);
+        opacity: 0;
+    }
+}
+
+#shovel-btn {
+    background: #8B4513;
+    border: 2px solid #5D3A1A;
+    border-radius: 8px;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+}
+
+#shovel-btn:hover {
+    background: #A0522D;
+    transform: scale(1.1);
+}
+
+#shovel-btn.active {
+    background: #FF6347;
+    border-color: #FF4500;
+    box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+}

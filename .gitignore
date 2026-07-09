@@ -1,0 +1,15 @@
+*.exe
+*.dll
+*.mp3
+*.ogg
+*.jpg
+*.png
+*.gif
+*.swf
+*.au
+*.mo3
+*.ttf
+*.xml
+*.sig
+.DS_Store
+Thumbs.db

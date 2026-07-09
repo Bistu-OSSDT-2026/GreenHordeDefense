@@ -354,11 +354,9 @@ export class Game {
     }
 
     removePlant(row, col) {
-        const index = this.plants.findIndex(p => p.row === row && p.col === col);
-        if (index !== -1) {
-            const plant = this.plants[index];
-            plant.destroy();
-            this.plants.splice(index, 1);
+        const plant = this.plants.find(p => p.row === row && p.col === col);
+        if (plant) {
+            plant.destroy(); // destroy() handles array removal
             return true;
         }
         return false;

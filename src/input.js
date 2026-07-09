@@ -96,6 +96,19 @@ export function initInput(gameState, callbacks) {
         'e': 'puffShroom', 'r': 'iceShroom'
     };
     function handleKeydown(e) {
+        // Ignore keyboard shortcuts when game is not active
+        const gameArea = document.getElementById('game-area');
+        if (!gameArea || gameArea.classList.contains('hidden')) return;
+
+        const pauseOverlay = document.getElementById('pause-overlay');
+        if (pauseOverlay && !pauseOverlay.classList.contains('hidden')) {
+            if (e.key === 'Escape') { callbacks.onTogglePause(); }
+            return;
+        }
+
+        const gameOver = document.getElementById('game-over');
+        if (gameOver && !gameOver.classList.contains('hidden')) return;
+
         if (e.key === 'Escape') { callbacks.onTogglePause(); return; }
         if (e.key === 's' || e.key === 'S') { callbacks.onToggleShovel(); return; }
         const plantType = plantKeys[e.key];

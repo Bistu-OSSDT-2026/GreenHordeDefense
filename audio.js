@@ -37,6 +37,7 @@ const AudioManager = {
         this.loadSFX('explosion', 'sounds/explosion.mp3');
         this.loadSFX('plant_deploy', 'sounds/plant_deploy.mp3');
         this.loadSFX('zombie', 'sounds/zombie.mp3');
+        this.loadSFX('click', 'sounds/click.mp3');
     },
 
     init() {
@@ -76,38 +77,32 @@ const AudioManager = {
         this.init();
         const ctx = this.audioContext;
         const now = ctx.currentTime;
+        const buffer = this.sfxBuffers['click'];
 
-        const osc1 = ctx.createOscillator();
-        const osc2 = ctx.createOscillator();
+        if (!buffer) {
+            this.loadSFX('click', 'sounds/click.mp3').then(buf => {
+                if (buf) this.playClick();
+            });
+            return;
+        }
+
+        const source = ctx.createBufferSource();
         const gain = ctx.createGain();
-        const reverb = this.createReverbNode();
-        const reverbGain = ctx.createGain();
 
-        osc1.type = 'sine';
-        osc1.frequency.setValueAtTime(1200, now);
-        osc1.frequency.exponentialRampToValueAtTime(1800, now + 0.03);
+        source.buffer = buffer;
+        source.playbackRate.value = 0.95 + Math.random() * 0.1;
 
-        osc2.type = 'triangle';
-        osc2.frequency.setValueAtTime(2400, now);
-        osc2.frequency.exponentialRampToValueAtTime(3600, now + 0.03);
-
+        const duration = Math.min(buffer.duration, 0.5);
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.5, now + 0.005);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.7, now + 0.01);
+        gain.gain.setValueAtTime(this.sfxVolume * 0.6, now + duration * 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration - 0.02);
 
-        reverbGain.gain.value = 0.15;
-
-        osc1.connect(gain);
-        osc2.connect(gain);
+        source.connect(gain);
         gain.connect(ctx.destination);
-        gain.connect(reverb);
-        reverb.connect(reverbGain);
-        reverbGain.connect(ctx.destination);
 
-        osc1.start(now);
-        osc2.start(now);
-        osc1.stop(now + 0.12);
-        osc2.stop(now + 0.12);
+        source.start(now, 0);
+        source.stop(now + duration);
     },
 
     playZombieGroan() {
@@ -125,34 +120,29 @@ const AudioManager = {
 
         const source = ctx.createBufferSource();
         const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
         const reverb = this.createReverbNode();
         const reverbGain = ctx.createGain();
 
         source.buffer = buffer;
-        const pitch = 0.9 + Math.random() * 0.25;
+        const pitch = 0.95 + Math.random() * 0.1;
         source.playbackRate.value = pitch;
 
-        filter.type = 'lowpass';
-        filter.frequency.value = 2500 + Math.random() * 500;
-
-        const duration = buffer.duration / pitch;
+        const clipDuration = 1.5 / pitch;
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.75, now + 0.12);
-        gain.gain.setValueAtTime(this.sfxVolume * 0.65, now + duration * 0.5);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration - 0.05);
+        gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.85, now + 0.1);
+        gain.gain.setValueAtTime(this.sfxVolume * 0.8, now + clipDuration * 0.5);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + clipDuration - 0.1);
 
-        reverbGain.gain.value = 0.25;
+        reverbGain.gain.value = 0.2;
 
-        source.connect(filter);
-        filter.connect(gain);
+        source.connect(gain);
         gain.connect(ctx.destination);
         gain.connect(reverb);
         reverb.connect(reverbGain);
         reverbGain.connect(ctx.destination);
 
-        source.start(now);
-        source.stop(now + duration);
+        source.start(now, 0);
+        source.stop(now + clipDuration);
     },
 
     playZombieWaveWarn() {
@@ -164,27 +154,24 @@ const AudioManager = {
             if (!buffer) return;
             const source = ctx.createBufferSource();
             const gain = ctx.createGain();
-            const filter = ctx.createBiquadFilter();
             const reverb = this.createReverbNode();
             const reverbGain = ctx.createGain();
             source.buffer = buffer;
-            source.playbackRate.value = 1.1;
-            filter.type = 'lowpass';
-            filter.frequency.value = 3000;
-            const duration = buffer.duration / 1.1;
+            const pitch = 1.1;
+            source.playbackRate.value = pitch;
+            const clipDuration = 1.5 / pitch;
             gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.85, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(this.sfxVolume * 0.75, ctx.currentTime + duration * 0.5);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration - 0.05);
-            reverbGain.gain.value = 0.3;
-            source.connect(filter);
-            filter.connect(gain);
+            gain.gain.linearRampToValueAtTime(this.sfxVolume * 0.9, ctx.currentTime + 0.08);
+            gain.gain.setValueAtTime(this.sfxVolume * 0.85, ctx.currentTime + clipDuration * 0.5);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + clipDuration - 0.1);
+            reverbGain.gain.value = 0.25;
+            source.connect(gain);
             gain.connect(ctx.destination);
             gain.connect(reverb);
             reverb.connect(reverbGain);
             reverbGain.connect(ctx.destination);
-            source.start(ctx.currentTime);
-            source.stop(ctx.currentTime + duration);
+            source.start(ctx.currentTime, 0);
+            source.stop(ctx.currentTime + clipDuration);
         }, 250);
     },
 

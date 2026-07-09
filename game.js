@@ -88,7 +88,8 @@ class Game {
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
         
-        this.weather = season === 'spring' ? 'rain' : 'sunny';
+        const level = levelManager.getLevelById(season);
+        this.weather = level ? level.weather : 'sunny';
         
         this.updateUI();
         this.showSeasonEffect(season);
@@ -302,7 +303,9 @@ class Game {
             return;
         }
         
-        const waveConfig = this.getWaveConfig(this.currentSeason, this.currentWave);
+        const level = levelManager.getLevelById(this.currentSeason);
+        const waveConfig = level ? level.waves[this.currentWave - 1] : null;
+        if (!waveConfig) return;
         
         if (waveConfig.isBigWave) {
             this.bigWaveCount++;
@@ -342,53 +345,6 @@ class Game {
                 this.startWave();
             }
         }
-    }
-
-    getWaveConfig(season, wave) {
-        const configs = {
-            spring: {
-                weather: 'rain',
-                waves: [
-                    { zombies: [{ type: 'normal', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 3 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 4 }, { type: 'cone', count: 1 }], isBigWave: true },
-                    { zombies: [{ type: 'normal', count: 3 }, { type: 'cone', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 5 }, { type: 'cone', count: 3 }, { type: 'bucket', count: 1 }], isBigWave: true }
-                ]
-            },
-            summer: {
-                weather: 'sunny',
-                waves: [
-                    { zombies: [{ type: 'normal', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 3 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 5 }, { type: 'cone', count: 2 }], isBigWave: true },
-                    { zombies: [{ type: 'normal', count: 4 }, { type: 'cone', count: 2 }, { type: 'football', count: 1 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 6 }, { type: 'cone', count: 4 }, { type: 'bucket', count: 2 }, { type: 'football', count: 1 }], isBigWave: true }
-                ]
-            },
-            autumn: {
-                weather: 'windy',
-                waves: [
-                    { zombies: [{ type: 'normal', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 3 }, { type: 'newspaper', count: 1 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 5 }, { type: 'newspaper', count: 2 }], isBigWave: true },
-                    { zombies: [{ type: 'normal', count: 4 }, { type: 'cone', count: 2 }, { type: 'newspaper', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 6 }, { type: 'cone', count: 4 }, { type: 'bucket', count: 2 }, { type: 'newspaper', count: 3 }], isBigWave: true }
-                ]
-            },
-            winter: {
-                weather: 'snowy',
-                waves: [
-                    { zombies: [{ type: 'normal', count: 2 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 3 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 5 }, { type: 'cone', count: 2 }], isBigWave: true },
-                    { zombies: [{ type: 'normal', count: 4 }, { type: 'cone', count: 3 }, { type: 'bucket', count: 1 }], isBigWave: false },
-                    { zombies: [{ type: 'normal', count: 7 }, { type: 'cone', count: 5 }, { type: 'bucket', count: 3 }, { type: 'football', count: 2 }], isBigWave: true }
-                ]
-            }
-        };
-        
-        return configs[season].waves[wave - 1] || configs.spring.waves[0];
     }
 
     spawnZombies(waveConfig) {

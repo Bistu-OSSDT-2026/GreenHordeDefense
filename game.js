@@ -70,6 +70,7 @@ class Game {
         this.weather = 'sunny';
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.plantCooldowns = {};
     }
 
     startGame(season) {
@@ -88,6 +89,7 @@ class Game {
         this.waveTimer = Date.now();
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.plantCooldowns = {};
         
         this.weather = season === 'spring' ? 'rain' : 'sunny';
         
@@ -119,6 +121,7 @@ class Game {
         this.updateZombies(deltaTime);
         this.updateProjectiles(deltaTime);
         this.updateSunItems(deltaTime);
+        this.updatePlantCooldowns(deltaTime);
         this.checkWaveTransition();
         this.checkGameOver();
     }
@@ -547,16 +550,38 @@ class Game {
         const rules = SEASON_RULES[this.currentSeason];
         const cooldown = plantConfig.cooldown * (rules.plantCooldownMultiplier || 1);
         
+        this.plantCooldowns[plantType] = {
+            remaining: cooldown * 1000,
+            total: cooldown * 1000
+        };
+        
         const cdElement = document.getElementById(`cd-${plantType}`);
         if (cdElement) {
             cdElement.style.height = '100%';
             const card = cdElement.parentElement;
             card.classList.add('disabled');
+        }
+    }
+
+    updatePlantCooldowns(deltaTime) {
+        for (const plantType in this.plantCooldowns) {
+            const cd = this.plantCooldowns[plantType];
+            cd.remaining -= deltaTime;
             
-            setTimeout(() => {
-                cdElement.style.height = '0%';
-                card.classList.remove('disabled');
-            }, cooldown * 1000);
+            const cdElement = document.getElementById(`cd-${plantType}`);
+            if (cdElement) {
+                const progress = Math.max(0, cd.remaining / cd.total);
+                cdElement.style.height = `${progress * 100}%`;
+            }
+            
+            if (cd.remaining <= 0) {
+                delete this.plantCooldowns[plantType];
+                if (cdElement) {
+                    cdElement.style.height = '0%';
+                    const card = cdElement.parentElement;
+                    card.classList.remove('disabled');
+                }
+            }
         }
     }
 

@@ -147,6 +147,7 @@ class Plant {
         this.exploding = false;
         this.explodeTimer = 0;
         this.targetZombie = null;
+        this.hasActivated = false;
         this.id = Date.now() + Math.random();
         this.element = null;
         
@@ -242,14 +243,11 @@ class Plant {
             this.checkSquash(game);
         }
 
-        if (this.type === 'iceShroom') {
-            if (!this.frozen) {
-                this.frozen = true;
-                setTimeout(() => {
-                    this.freezeAll(game);
-                }, 1400);
-            }
-        }
+        if (this.type === 'iceShroom' && !this.hasActivated) {
+            this.hasActivated = true;
+            setTimeout(() => {
+                this.freezeAll(game);
+            }, 1400);
     }
 
     attack(game) {

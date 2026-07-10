@@ -197,48 +197,47 @@ function updateSFXVolume(val) {
     document.getElementById('pauseSFXVolume').value = val;
 }
 
-function toggleMute() {
-    const muted = audioManager.toggleMute();
-    updateMuteButton(muted);
-    return muted;
-}
-
-function updateMuteButton(muted) {
-    const btn = document.getElementById('mute-btn');
-    if (!btn) return;
-    btn.textContent = muted ? '🔇' : '🔊';
-    btn.classList.toggle('muted', muted);
-    btn.title = muted ? '取消静音 (M键)' : '静音 (M键)';
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const lawnContainer = document.getElementById('lawn-container');
-
+    
     lawnContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('sun-item')) {
             e.stopPropagation();
         }
     });
 
-    // 页面加载时根据 audioManager 状态同步按钮显示
-    updateMuteButton(audioManager.getMuteState());
-
     document.addEventListener('keydown', (e) => {
-        // 避免在输入框里按 M 也触发静音
-        const tag = (e.target && e.target.tagName) || '';
-        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
-        if (e.key === 'Escape') {
+        const key = e.key.toLowerCase();
+        const isGameActive = game && (game.state === GAME_STATES.PLAYING || game.state === GAME_STATES.PAUSED);
+        
+        if (!isGameActive) return;
+        
+        if (key === 'escape' || key === 'p') {
+            e.preventDefault();
             togglePause();
-        } else if (e.key === 'm' || e.key === 'M') {
-            toggleMute();
+            return;
+        }
+        
+        if (key === 's' && game.state === GAME_STATES.PLAYING) {
+            e.preventDefault();
+            toggleShovel();
+            return;
+        }
+        
+        const slot = Number(key);
+        if (game.state === GAME_STATES.PLAYING && slot >= 1 && slot <= 6) {
+            const cards = document.querySelectorAll('#plant-selector .plant-card');
+            const card = cards[slot - 1];
+            
+            if (card) {
+                e.preventDefault();
+                selectPlant(card.dataset.plant);
+            }
         }
     });
 });
 
 function playSound(soundName) {
-    // 静音时直接跳过,避免创建无意义的 Audio 对象
-    if (audioManager.getMuteState()) return;
     const audio = new Audio(`95版/sounds/${soundName}.ogg`);
     audio.volume = 0.3;
     audio.play().catch(() => {});

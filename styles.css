@@ -324,6 +324,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 14px;
     padding: 0 20px;
     border-bottom: 3px solid #2d5a87;
 }
@@ -352,9 +353,27 @@ body {
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
-.wave-info, .season-info {
+.wave-info, .season-info, .score-info, .zombie-info {
     font-size: 1.5rem;
     color: #fff;
+}
+
+.score-info, .zombie-info {
+    min-width: 110px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.14);
+    text-align: center;
+}
+
+#score-count {
+    color: #ffd700;
+    font-weight: bold;
+}
+
+#zombie-count {
+    color: #f87171;
+    font-weight: bold;
 }
 
 #pause-btn {
@@ -424,6 +443,13 @@ body {
     height: 100px;
     margin: -25px auto;
     display: block;
+}
+
+.plant-card[data-plant="threepeater"] .plant-icon,
+.plant-card[data-plant="gloomShroom"] .plant-icon,
+.plant-select-card[data-plant="threepeater"] .plant-icon,
+.plant-select-card[data-plant="gloomShroom"] .plant-icon {
+    object-fit: contain;
 }
 
 .plant-cost {
@@ -497,6 +523,40 @@ body {
     width: 120%;
     height: 120%;
     transform: translate(-10%, -10%);
+}
+
+.plant-in-cell.threepeater {
+    transform: scale(1.05);
+}
+
+.plant-in-cell.gloomShroom {
+    transform: scale(1.08);
+}
+
+.plant-in-cell.gloomShroom.attacking {
+    animation: gloomAttack 0.45s ease-out;
+}
+
+@keyframes gloomAttack {
+    0%, 100% { transform: scale(1.08); }
+    50% { transform: scale(1.2); }
+}
+
+.gloom-pulse {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border: 3px solid rgba(180, 90, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 25px rgba(180, 90, 255, 0.7);
+    pointer-events: none;
+    z-index: 7;
+    animation: gloomPulse 0.45s ease-out forwards;
+}
+
+@keyframes gloomPulse {
+    0% { transform: scale(0.45); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 0; }
 }
 
 .lawnmower-row {
@@ -767,6 +827,8 @@ body {
 @media (max-width: 768px) {
     #game-header {
         height: 60px;
+        gap: 8px;
+        padding: 0 8px;
     }
     .sun-icon {
         width: 30px;
@@ -775,8 +837,12 @@ body {
     #sun-count {
         font-size: 1.5rem;
     }
-    .wave-info, .season-info {
+    .wave-info, .season-info, .score-info, .zombie-info {
         font-size: 1rem;
+    }
+    .score-info, .zombie-info {
+        min-width: 82px;
+        padding: 6px 8px;
     }
     #plant-selector {
         height: 100px;
@@ -970,32 +1036,4 @@ body {
     background: #FF6347;
     border-color: #FF4500;
     box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
-}
-
-.mute-btn {
-    background: #4A6FA5;
-    border: 2px solid #2D4A75;
-    border-radius: 8px;
-    padding: 5px 10px;
-    font-size: 1.2rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    margin-right: 10px;
-    color: #fff;
-}
-
-.mute-btn:hover {
-    background: #5A7FB5;
-    transform: scale(1.1);
-}
-
-.mute-btn.muted {
-    background: #888;
-    border-color: #555;
-    box-shadow: 0 0 8px rgba(100, 100, 100, 0.5);
-}
-
-.mute-btn.muted:hover {
-    background: #999;
 }

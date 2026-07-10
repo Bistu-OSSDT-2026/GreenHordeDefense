@@ -1,12 +1,13 @@
 const PLANT_TYPES = {
     ASH: ['cherryBomb', 'jalapeno', 'doomShroom', 'potatoMine'],
-    SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom'],
+    SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom', 'threepeater'],
     THROWER: ['melonPult'],
     FIRE: ['firePea', 'jalapeno'],
     ICE: ['icePea', 'iceShroom'],
     SUN: ['sunflower', 'sunShroom'],
     DEFENSE: ['wallnut'],
-    MELEE: ['squash']
+    MELEE: ['squash'],
+    AOE: ['gloomShroom']
 };
 
 const GAME_STATES = {
@@ -121,6 +122,7 @@ class Game {
         this.updateSunItems(deltaTime);
         this.checkWaveTransition();
         this.checkGameOver();
+        this.updateStatsUI();
     }
 
     updateSunDrop() {
@@ -703,6 +705,7 @@ class Game {
         document.getElementById('game-area').classList.remove('hidden');
         this.updateSunUI();
         this.updateWaveUI();
+        this.updateStatsUI();
         this.updateSeasonUI();
     }
 
@@ -726,6 +729,19 @@ class Game {
 
     updateWaveUI() {
         document.getElementById('wave-count').textContent = `${this.currentWave}/${this.maxWaves}`;
+    }
+
+    updateStatsUI() {
+        const scoreElement = document.getElementById('score-count');
+        const zombieElement = document.getElementById('zombie-count');
+        
+        if (scoreElement) {
+            scoreElement.textContent = this.score;
+        }
+        
+        if (zombieElement) {
+            zombieElement.textContent = this.zombies.length;
+        }
     }
 
     updateSeasonUI() {

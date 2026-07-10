@@ -70,6 +70,8 @@ class Game {
         this.weather = 'sunny';
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.zombiesInWave = 0;
+        this.zombiesSpawned = 0;
     }
 
     startGame(season) {
@@ -88,6 +90,8 @@ class Game {
         this.waveTimer = Date.now();
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.zombiesInWave = 0;
+        this.zombiesSpawned = 0;
         
         this.weather = season === 'spring' ? 'rain' : 'sunny';
         
@@ -294,11 +298,18 @@ class Game {
     }
 
     checkWaveTransition() {
-        if (this.zombies.length === 0 && this.currentWave > 0) {
-            const now = Date.now();
-            if (now - this.waveTimer >= this.waveDelay) {
-                this.startWave();
-            }
+        if (this.currentWave > this.maxWaves) return;
+        if (this.state !== GAME_STATES.PLAYING) return;
+        if (this.zombiesSpawned < this.zombiesInWave) return;
+        if (this.zombies.length > 0) return;
+
+        const now = Date.now();
+        if (now - this.waveTimer < this.waveDelay) return;
+
+        if (this.currentWave >= this.maxWaves) {
+            this.winGame();
+        } else {
+            this.startWave();
         }
     }
 
@@ -312,12 +323,17 @@ class Game {
         }
         
         const waveConfig = this.getWaveConfig(this.currentSeason, this.currentWave);
-        
+        if (!waveConfig) return;
+
+        const totalZombies = waveConfig.zombies.reduce((sum, g) => sum + g.count, 0);
+        this.zombiesInWave = totalZombies;
+        this.zombiesSpawned = 0;
+
         if (waveConfig.isBigWave) {
             this.bigWaveCount++;
             this.showBigWaveWarning();
         }
-        
+
         this.spawnZombies(waveConfig);
     }
 
@@ -337,20 +353,6 @@ class Game {
         document.getElementById('lawn-container').appendChild(warning);
         
         setTimeout(() => warning.remove(), 3000);
-    }
-
-    checkWaveTransition() {
-        if (this.zombies.length === 0) {
-            if (this.currentWave >= this.maxWaves && this.bigWaveCount >= 2) {
-                this.winGame();
-                return;
-            }
-            
-            const now = Date.now();
-            if (now - this.waveTimer >= this.waveDelay) {
-                this.startWave();
-            }
-        }
     }
 
     getWaveConfig(season, wave) {
@@ -433,6 +435,7 @@ class Game {
     spawnZombie(type, row) {
         const zombie = this.createZombie(type, row);
         this.zombies.push(zombie);
+        this.zombiesSpawned++;
         zombie.createElement();
         audioManager.playZombieEnter();
     }

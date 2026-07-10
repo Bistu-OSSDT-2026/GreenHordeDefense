@@ -971,3 +971,31 @@ body {
     border-color: #FF4500;
     box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
 }
+
+.mute-btn {
+    background: #4A6FA5;
+    border: 2px solid #2D4A75;
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 10px;
+    color: #fff;
+}
+
+.mute-btn:hover {
+    background: #5A7FB5;
+    transform: scale(1.1);
+}
+
+.mute-btn.muted {
+    background: #888;
+    border-color: #555;
+    box-shadow: 0 0 8px rgba(100, 100, 100, 0.5);
+}
+
+.mute-btn.muted:hover {
+    background: #999;
+}

@@ -207,8 +207,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            togglePause();
+        // Ignore keyboard shortcuts when game is not active
+        const gameArea = document.getElementById('game-area');
+        if (!gameArea || gameArea.classList.contains('hidden')) return;
+
+        const pauseOverlay = document.getElementById('pause-overlay');
+        if (pauseOverlay && !pauseOverlay.classList.contains('hidden')) {
+            if (e.key === 'Escape') { togglePause(); }
+            return;
+        }
+
+        const gameOver = document.getElementById('game-over');
+        if (gameOver && !gameOver.classList.contains('hidden')) return;
+
+        if (e.key === 'Escape') { togglePause(); return; }
+        if (e.key === 's' || e.key === 'S') { toggleShovel(); return; }
+        const plantType = plantKeys[e.key];
+        if (plantType && game && game.state === GAME_STATES.PLAYING) {
+            selectPlant(plantType);
         }
     });
 });

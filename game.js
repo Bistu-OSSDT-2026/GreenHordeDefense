@@ -70,6 +70,9 @@ class Game {
         this.weather = 'sunny';
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.spawnQueue = [];
+        this.spawnQueueIndex = 0;
+        this.spawnTimer = 0;
     }
 
     startGame(season) {
@@ -88,7 +91,10 @@ class Game {
         this.waveTimer = Date.now();
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
-        
+        this.spawnQueue = [];
+        this.spawnQueueIndex = 0;
+        this.spawnTimer = 0;
+
         this.weather = season === 'spring' ? 'rain' : 'sunny';
         
         this.updateUI();
@@ -115,6 +121,7 @@ class Game {
 
     update(deltaTime) {
         this.updateSunDrop();
+        this.updateSpawns(deltaTime);
         this.updatePlants(deltaTime);
         this.updateZombies(deltaTime);
         this.updateProjectiles(deltaTime);
@@ -317,8 +324,18 @@ class Game {
             this.bigWaveCount++;
             this.showBigWaveWarning();
         }
-        
-        this.spawnZombies(waveConfig);
+
+        // Build spawn queue from wave config
+        this.spawnQueue = [];
+        let delay = 0;
+        for (const group of waveConfig.zombies) {
+            for (let i = 0; i < group.count; i++) {
+                this.spawnQueue.push({ type: group.type, row: Math.floor(Math.random() * 5), delay });
+                delay += 3000;
+            }
+        }
+        this.spawnQueueIndex = 0;
+        this.spawnTimer = 0;
     }
 
     showBigWaveWarning() {
@@ -400,33 +417,14 @@ class Game {
         return configs[season].waves[wave - 1] || configs.spring.waves[0];
     }
 
-    spawnZombies(waveConfig) {
-        const zombiesList = [];
-        for (const group of waveConfig.zombies) {
-            for (let i = 0; i < group.count; i++) {
-                zombiesList.push(group.type);
-            }
-        }
-        
-        let delay = 0;
-        const squadSize = 3;
-        
-        for (let i = 0; i < zombiesList.length; i += squadSize) {
-            const squad = zombiesList.slice(i, i + squadSize);
-            const squadRow = Math.floor(Math.random() * 5);
-            
-            for (let j = 0; j < squad.length; j++) {
-                const type = squad[j];
-                const row = Math.random() < 0.7 ? squadRow : Math.floor(Math.random() * 5);
-                
-                setTimeout(() => {
-                    if (this.state !== GAME_STATES.PLAYING) return;
-                    this.spawnZombie(type, row);
-                }, delay);
-                delay += 800;
-            }
-            
-            delay += 2000 + Math.random() * 2000;
+    updateSpawns(deltaTime) {
+        if (this.spawnQueueIndex >= this.spawnQueue.length) return;
+        this.spawnTimer += deltaTime;
+        while (this.spawnQueueIndex < this.spawnQueue.length &&
+               this.spawnTimer >= this.spawnQueue[this.spawnQueueIndex].delay) {
+            const entry = this.spawnQueue[this.spawnQueueIndex];
+            this.spawnZombie(entry.type, entry.row);
+            this.spawnQueueIndex++;
         }
     }
 

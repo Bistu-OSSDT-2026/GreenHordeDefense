@@ -2,6 +2,42 @@ let selectedPlant = null;
 let shovelMode = false;
 let selectedPlants = [];
 let currentSeason = null;
+let selectedBGM = 'day';
+let previewAudio = null;
+
+function selectBGM(track) {
+    selectedBGM = track;
+    audioManager.playClick();
+    if (previewAudio && !previewAudio.paused) {
+        stopPreviewBGM();
+        setTimeout(() => previewBGM(), 100);
+    }
+}
+
+function previewBGM() {
+    audioManager.init();
+    if (previewAudio) {
+        previewAudio.pause();
+        previewAudio = null;
+    }
+    const trackPath = selectedBGM === 'night' ? 'sounds/bgm_night.mp3' : 'sounds/bgm_day.mp3';
+    previewAudio = new Audio(trackPath);
+    previewAudio.volume = audioManager.bgmVolume;
+    previewAudio.loop = true;
+    previewAudio.play().catch(e => console.log('Preview play error:', e));
+    document.getElementById('previewBGMbtn').style.display = 'none';
+    document.getElementById('stopPreviewBGMbtn').style.display = 'inline-block';
+}
+
+function stopPreviewBGM() {
+    if (previewAudio) {
+        previewAudio.pause();
+        previewAudio.currentTime = 0;
+        previewAudio = null;
+    }
+    document.getElementById('previewBGMbtn').style.display = 'inline-block';
+    document.getElementById('stopPreviewBGMbtn').style.display = 'none';
+}
 
 function startGame(season) {
     currentSeason = season;
@@ -69,7 +105,8 @@ function confirmPlantSelection() {
     if (selectedPlants.length === 0) return;
     
     audioManager.playClick();
-    audioManager.startBGM('day');
+    stopPreviewBGM();
+    audioManager.startBGM(selectedBGM);
     
     document.getElementById('plant-select-screen').classList.add('hidden');
     document.getElementById('game-area').classList.remove('hidden');
@@ -198,6 +235,8 @@ function updateSFXVolume(val) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    audioManager.preloadSFX();
+    
     const lawnContainer = document.getElementById('lawn-container');
     
     lawnContainer.addEventListener('click', (e) => {

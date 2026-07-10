@@ -369,7 +369,12 @@ class Plant {
         if (game.weather === 'rain') {
             damage *= 0.7;
         }
-        
+
+        const rules = SEASON_RULES[game.currentSeason];
+        if (rules.fireDamageMultiplier && PLANT_TYPES.FIRE.includes(this.type)) {
+            damage *= rules.fireDamageMultiplier;
+        }
+
         if (this.type === 'jalapeno') {
             this.createJalapenoFire(game);
             for (const zombie of game.zombies) {

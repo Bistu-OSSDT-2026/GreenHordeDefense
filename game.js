@@ -677,7 +677,9 @@ class Game {
         this.waveTimer = Date.now();
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
-        
+        this.zombiesKilledInWave = 0;
+        this.zombiesTotalInWave = 0;
+
         document.getElementById('pause-overlay').classList.add('hidden');
         document.getElementById('game-over').classList.add('hidden');
         
@@ -747,7 +749,8 @@ class Game {
         const fillEl = document.getElementById('wave-progress-fill');
 
         if (textEl) {
-            textEl.textContent = `${this.currentWave}/${this.maxWaves}`;
+            const displayWave = this.currentWave > 0 ? this.currentWave : 1;
+            textEl.textContent = `${displayWave}/${this.maxWaves}`;
         }
         if (percentEl && fillEl) {
             const pct = this.zombiesTotalInWave > 0

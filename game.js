@@ -70,6 +70,8 @@ class Game {
         this.weather = 'sunny';
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.cooldowns = {};
+        this.pausedAt = null;
     }
 
     startGame(season) {
@@ -88,7 +90,9 @@ class Game {
         this.waveTimer = Date.now();
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
-        
+        this.cooldowns = {};
+        this.pausedAt = null;
+
         this.weather = season === 'spring' ? 'rain' : 'sunny';
         
         this.updateUI();
@@ -546,17 +550,19 @@ class Game {
         const plantConfig = Plant.getConfig(plantType);
         const rules = SEASON_RULES[this.currentSeason];
         const cooldown = plantConfig.cooldown * (rules.plantCooldownMultiplier || 1);
-        
+        const cooldownMs = cooldown * 1000;
+        this.cooldowns[plantType] = Date.now() + cooldownMs;
+
         const cdElement = document.getElementById(`cd-${plantType}`);
         if (cdElement) {
             cdElement.style.height = '100%';
             const card = cdElement.parentElement;
             card.classList.add('disabled');
-            
+
             setTimeout(() => {
                 cdElement.style.height = '0%';
                 card.classList.remove('disabled');
-            }, cooldown * 1000);
+            }, cooldownMs);
         }
     }
 
@@ -593,10 +599,31 @@ class Game {
     togglePause() {
         if (this.state === GAME_STATES.PLAYING) {
             this.state = GAME_STATES.PAUSED;
+            this.pausedAt = Date.now();
             if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
             document.getElementById('pause-overlay').classList.remove('hidden');
             audioManager.pauseBGM();
         } else if (this.state === GAME_STATES.PAUSED) {
+            const pauseDuration = Date.now() - this.pausedAt;
+            this.pausedAt = null;
+
+            // Compensate sun drop and wave timers
+            this.lastSunDrop += pauseDuration;
+            this.waveTimer += pauseDuration;
+
+            // Restart active cooldowns with adjusted remaining time
+            const now = Date.now();
+            for (const [plantType, endTime] of Object.entries(this.cooldowns)) {
+                const remaining = endTime + pauseDuration - now;
+                if (remaining > 0) {
+                    this.cooldowns[plantType] = now + remaining;
+                    this.restartCooldownTimer(plantType, remaining);
+                } else {
+                    delete this.cooldowns[plantType];
+                    this.finishPlantCooldown(plantType);
+                }
+            }
+
             this.state = GAME_STATES.PLAYING;
             this.startGameLoop();
             document.getElementById('pause-overlay').classList.add('hidden');
@@ -604,10 +631,31 @@ class Game {
         }
     }
 
+    restartCooldownTimer(plantType, remainingMs) {
+        const cdElement = document.getElementById(`cd-${plantType}`);
+        if (!cdElement) return;
+        cdElement.style.height = '100%';
+        const card = cdElement.parentElement;
+        card.classList.add('disabled');
+        setTimeout(() => {
+            this.finishPlantCooldown(plantType);
+        }, remainingMs);
+    }
+
+    finishPlantCooldown(plantType) {
+        delete this.cooldowns[plantType];
+        const cdElement = document.getElementById(`cd-${plantType}`);
+        if (!cdElement) return;
+        cdElement.style.height = '0%';
+        const card = cdElement.parentElement;
+        card.classList.remove('disabled');
+    }
+
     backToMenu() {
         this.state = GAME_STATES.MENU;
         if (this.gameLoop) cancelAnimationFrame(this.gameLoop);
-        
+        this.cooldowns = {};
+
         this.clearAllGameElements();
         
         document.getElementById('game-area').classList.add('hidden');

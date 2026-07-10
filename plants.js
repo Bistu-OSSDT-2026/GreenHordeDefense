@@ -307,24 +307,6 @@ class Plant {
         this.attackCooldown = this.config.attackCooldown;
     }
 
-    checkExplode(game) {
-        if (!this.exploding) {
-            this.exploding = true;
-            this.explodeTimer = this.config.explodeDelay;
-            
-            if (this.element) {
-                this.element.classList.add('exploding');
-            }
-        }
-
-        if (this.exploding) {
-            this.explodeTimer -= 16;
-            if (this.explodeTimer <= 0) {
-                this.explode(game);
-            }
-        }
-    }
-
     checkSquash(game) {
         const cellWidth = 100;
         const zombiesInRow = game.zombies.filter(z => 

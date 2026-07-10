@@ -70,6 +70,8 @@ class Game {
         this.weather = 'sunny';
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
+        this.zombiesKilledInWave = 0;
+        this.zombiesTotalInWave = 0;
     }
 
     startGame(season) {
@@ -88,7 +90,9 @@ class Game {
         this.waveTimer = Date.now();
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
-        
+        this.zombiesKilledInWave = 0;
+        this.zombiesTotalInWave = 0;
+
         this.weather = season === 'spring' ? 'rain' : 'sunny';
         
         this.updateUI();
@@ -225,6 +229,8 @@ class Game {
             if (zombie.health <= 0) {
                 this.zombies.splice(i, 1);
                 this.score += zombie.score;
+                this.zombiesKilledInWave++;
+                this.updateWaveProgressBar();
                 
                 if (zombie.wasBurned) {
                     zombie.showAshAnimation();
@@ -312,12 +318,17 @@ class Game {
         }
         
         const waveConfig = this.getWaveConfig(this.currentSeason, this.currentWave);
-        
+
+        // Track total zombies in this wave for progress bar
+        this.zombiesTotalInWave = waveConfig.zombies.reduce((sum, g) => sum + g.count, 0);
+        this.zombiesKilledInWave = 0;
+        this.updateWaveProgressBar();
+
         if (waveConfig.isBigWave) {
             this.bigWaveCount++;
             this.showBigWaveWarning();
         }
-        
+
         this.spawnZombies(waveConfig);
     }
 
@@ -479,6 +490,7 @@ class Game {
                 if (zombie.row === row) {
                     this.zombies.splice(i, 1);
                     this.score += zombie.score;
+                    this.zombiesKilledInWave++;
                     const element = document.getElementById(`zombie-${zombie.id}`);
                     if (element) element.remove();
                 }
@@ -704,6 +716,7 @@ class Game {
         this.updateSunUI();
         this.updateWaveUI();
         this.updateSeasonUI();
+        this.updateWaveProgressBar();
     }
 
     updateSunUI() {
@@ -726,6 +739,23 @@ class Game {
 
     updateWaveUI() {
         document.getElementById('wave-count').textContent = `${this.currentWave}/${this.maxWaves}`;
+    }
+
+    updateWaveProgressBar() {
+        const textEl = document.getElementById('wave-progress-text');
+        const percentEl = document.getElementById('wave-progress-percent');
+        const fillEl = document.getElementById('wave-progress-fill');
+
+        if (textEl) {
+            textEl.textContent = `${this.currentWave}/${this.maxWaves}`;
+        }
+        if (percentEl && fillEl) {
+            const pct = this.zombiesTotalInWave > 0
+                ? Math.round((this.zombiesKilledInWave / this.zombiesTotalInWave) * 100)
+                : 0;
+            percentEl.textContent = pct + '%';
+            fillEl.style.width = pct + '%';
+        }
     }
 
     updateSeasonUI() {

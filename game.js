@@ -89,8 +89,10 @@ class Game {
         this.bigWaveCount = 0;
         this.lastBigWave = 0;
         
-        this.weather = season === 'spring' ? 'rain' : 'sunny';
-        
+        const level = levelManager.getLevelById(season);
+        this.weather = level ? level.weather : 'sunny';
+        this.maxWaves = level ? level.waves.length : 5;
+
         this.updateUI();
         this.showSeasonEffect(season);
         this.startGameLoop();
@@ -143,10 +145,10 @@ class Game {
             y: -50,
             targetY,
             state: 'falling',
-            rotation: 0
+            createdAt: Date.now()
         };
         this.sunItems.push(sunItem);
-        
+
         const sunElement = document.createElement('div');
         sunElement.className = 'sun-item falling';
         sunElement.id = `sun-${sunItem.id}`;
@@ -156,7 +158,7 @@ class Game {
         sunElement.innerHTML = `<img src="图片和动画素材/阳光.gif" style="width:100%;height:100%;">`;
         sunElement.onclick = () => this.collectSun(sunItem.id);
         document.getElementById('lawn-container').appendChild(sunElement);
-        
+
         setTimeout(() => {
             sunElement.classList.remove('falling');
             sunElement.classList.add('stationary');
@@ -169,14 +171,14 @@ class Game {
     spawnSunNearPlant(plant) {
         const x = plant.x + (Math.random() - 0.5) * 60;
         const y = plant.y + (Math.random() - 0.5) * 60;
-        
+
         const sunItem = {
             id: Date.now() + Math.random(),
             x,
             y: y - 80,
             targetY: y,
             state: 'falling',
-            rotation: 0
+            createdAt: Date.now()
         };
         this.sunItems.push(sunItem);
         
@@ -275,20 +277,18 @@ class Game {
     }
 
     updateSunItems(deltaTime) {
+        const now = Date.now();
+        const SUN_EXPIRE_TIME = 8000;
         for (let i = this.sunItems.length - 1; i >= 0; i--) {
             const sun = this.sunItems[i];
-            sun.y += sun.vy;
-            sun.rotation += 0.05;
-            
-            const element = document.getElementById(`sun-${sun.id}`);
-            if (element) {
-                element.style.top = `${sun.y}px`;
-                element.style.transform = `rotate(${sun.rotation}deg)`;
-            }
-            
-            if (sun.y > window.innerHeight) {
+            if (sun.state === 'stationary' && now - sun.createdAt > SUN_EXPIRE_TIME + 3000) {
                 this.sunItems.splice(i, 1);
-                if (element) element.remove();
+                const element = document.getElementById(`sun-${sun.id}`);
+                if (element) {
+                    element.style.transition = 'opacity 0.5s';
+                    element.style.opacity = '0';
+                    setTimeout(() => element.remove(), 500);
+                }
             }
         }
     }

@@ -206,9 +206,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    const plantKeys = {
+        '1': 'sunflower',
+        '2': 'peaShooter',
+        '3': 'icePea',
+        '4': 'doublePea',
+        '5': 'firePea',
+        '6': 'melonPult',
+        '7': 'cherryBomb',
+        '8': 'jalapeno',
+        '9': 'wallnut',
+        '0': 'squash',
+        'q': 'doomShroom',
+        'w': 'sunShroom',
+        'e': 'puffShroom',
+        'r': 'iceShroom'
+    };
+
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             togglePause();
+            return;
+        }
+        if (e.key === 's' || e.key === 'S') {
+            toggleShovel();
+            return;
+        }
+        const plantType = plantKeys[e.key];
+        if (plantType && game && game.state === GAME_STATES.PLAYING) {
+            selectPlant(plantType);
         }
     });
 });

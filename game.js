@@ -1,5 +1,5 @@
 const PLANT_TYPES = {
-    ASH: ['cherryBomb', 'jalapeno', 'doomShroom', 'potatoMine'],
+    ASH: ['cherryBomb', 'jalapeno', 'doomShroom'],
     SHOOTER: ['peaShooter', 'icePea', 'doublePea', 'firePea', 'puffShroom'],
     THROWER: ['melonPult'],
     FIRE: ['firePea', 'jalapeno'],
@@ -225,6 +225,7 @@ class Game {
             if (zombie.health <= 0) {
                 this.zombies.splice(i, 1);
                 this.score += zombie.score;
+                this.updateScoreUI();
                 
                 if (zombie.wasBurned) {
                     zombie.showAshAnimation();
@@ -289,15 +290,6 @@ class Game {
             if (sun.y > window.innerHeight) {
                 this.sunItems.splice(i, 1);
                 if (element) element.remove();
-            }
-        }
-    }
-
-    checkWaveTransition() {
-        if (this.zombies.length === 0 && this.currentWave > 0) {
-            const now = Date.now();
-            if (now - this.waveTimer >= this.waveDelay) {
-                this.startWave();
             }
         }
     }
@@ -479,6 +471,7 @@ class Game {
                 if (zombie.row === row) {
                     this.zombies.splice(i, 1);
                     this.score += zombie.score;
+                    this.updateScoreUI();
                     const element = document.getElementById(`zombie-${zombie.id}`);
                     if (element) element.remove();
                 }
@@ -702,18 +695,19 @@ class Game {
         document.getElementById('game-menu').classList.add('hidden');
         document.getElementById('game-area').classList.remove('hidden');
         this.updateSunUI();
+        this.updateScoreUI();
         this.updateWaveUI();
         this.updateSeasonUI();
     }
 
     updateSunUI() {
         document.getElementById('sun-count').textContent = this.sun;
-        
+
         document.querySelectorAll('.plant-card').forEach(card => {
             const plantType = card.dataset.plant;
             const plantConfig = Plant.getConfig(plantType);
             const costEl = card.querySelector('.plant-cost');
-            
+
             if (plantConfig && costEl) {
                 if (this.sun >= plantConfig.cost) {
                     costEl.style.color = '#ffd700';
@@ -722,6 +716,11 @@ class Game {
                 }
             }
         });
+    }
+
+    updateScoreUI() {
+        const el = document.getElementById('score-count');
+        if (el) el.textContent = this.score;
     }
 
     updateWaveUI() {

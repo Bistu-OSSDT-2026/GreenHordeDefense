@@ -341,7 +341,7 @@ class Game {
 
     checkWaveTransition() {
         if (this.zombies.length === 0) {
-            if (this.currentWave >= this.maxWaves && this.bigWaveCount >= 2) {
+            if (this.currentWave >= this.maxWaves) {
                 this.winGame();
                 return;
             }

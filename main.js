@@ -1,125 +1,43 @@
 let selectedPlant = null;
 let shovelMode = false;
-let selectedPlants = [];
-let currentSeason = null;
 
-function startGame(season) {
-    currentSeason = season;
-    selectedPlants = [];
-    
-    document.getElementById('game-menu').classList.add('hidden');
-    document.getElementById('plant-select-screen').classList.remove('hidden');
-    document.getElementById('game-area').classList.add('hidden');
-    
-    updateSelectedPlantsPreview();
-}
+// 由 plant-picker.js 调用：本局已选的植物 ID 数组（来自用户挑选）
+// 为 null 或 undefined 时不进行过滤（兼容老流程）
+let currentPickedPlants = null;
 
-function togglePlantSelection(plantType) {
-    audioManager.playClick();
-    const index = selectedPlants.indexOf(plantType);
-    
-    if (index > -1) {
-        selectedPlants.splice(index, 1);
-    } else {
-        if (selectedPlants.length >= 6) {
-            return;
-        }
-        selectedPlants.push(plantType);
-    }
-    
-    updateSelectedPlantsPreview();
-}
+function startGame(season, pickedPlants) {
+    // 兼容：若没传 pickedPlants（老调用方式）则不过滤
+    currentPickedPlants = Array.isArray(pickedPlants) ? pickedPlants.slice() : null;
 
-function updateSelectedPlantsPreview() {
-    const cards = document.querySelectorAll('.plant-select-card');
-    cards.forEach(card => {
-        const plantType = card.dataset.plant;
-        card.classList.toggle('selected', selectedPlants.includes(plantType));
-        card.classList.toggle('disabled', !selectedPlants.includes(plantType) && selectedPlants.length >= 6);
-    });
-    
-    document.getElementById('selected-count').textContent = selectedPlants.length;
-    
-    const list = document.getElementById('selected-plants-list');
-    list.innerHTML = '';
-    
-    selectedPlants.forEach((plantType, index) => {
-        const config = Plant.getConfig(plantType);
-        const item = document.createElement('div');
-        item.className = 'selected-plant-preview';
-        item.innerHTML = `
-            <img src="${config.image}" class="plant-icon">
-            <span class="plant-cost">${config.cost}</span>
-            <span class="remove-btn" onclick="removeSelectedPlant(${index})">×</span>
-        `;
-        list.appendChild(item);
-    });
-    
-    const confirmBtn = document.getElementById('confirm-plant-btn');
-    confirmBtn.disabled = selectedPlants.length === 0;
-}
-
-function removeSelectedPlant(index) {
-    audioManager.playClick();
-    selectedPlants.splice(index, 1);
-    updateSelectedPlantsPreview();
-}
-
-function confirmPlantSelection() {
-    if (selectedPlants.length === 0) return;
-    
-    audioManager.playClick();
-    audioManager.startBGM('day');
-    
-    document.getElementById('plant-select-screen').classList.add('hidden');
-    document.getElementById('game-area').classList.remove('hidden');
-    
     game = new Game();
-    game.selectedPlants = [...selectedPlants];
-    game.startGame(currentSeason);
-    SeasonEffects.applySeasonEffects(currentSeason);
-    SeasonEffects.createSeasonOverlay(currentSeason);
+    game.startGame(season);
+    SeasonEffects.applySeasonEffects(season);
+    SeasonEffects.createSeasonOverlay(season);
     shovelMode = false;
     updateShovelUI();
-    
-    updatePlantSelector();
-}
-
-function updatePlantSelector() {
-    const selector = document.getElementById('plant-selector');
-    const allCards = selector.querySelectorAll('.plant-card');
-    allCards.forEach(card => card.remove());
-    
-    selectedPlants.forEach(plantType => {
-        const config = Plant.getConfig(plantType);
-        const card = document.createElement('div');
-        card.className = 'plant-card';
-        card.dataset.plant = plantType;
-        card.onclick = () => selectPlant(plantType);
-        card.innerHTML = `
-            <img src="${config.image}" class="plant-icon">
-            <span class="plant-cost">${config.cost}</span>
-            <div class="plant-cooldown" id="cd-${plantType}"></div>
-        `;
-        selector.appendChild(card);
-    });
 }
 
 function selectPlant(plantType) {
+    // 防御性过滤：如果没在本局挑选列表里，禁止选择
+    if (currentPickedPlants && currentPickedPlants.indexOf(plantType) < 0) {
+        return;
+    }
+
     const plantConfig = Plant.getConfig(plantType);
     if (game.sun < plantConfig.cost) {
         return;
     }
 
-    audioManager.playClick();
     shovelMode = false;
     updateShovelUI();
-    
+
     const cards = document.querySelectorAll('.plant-card');
     cards.forEach(card => card.classList.remove('selected'));
 
     const selectedCard = document.querySelector(`[data-plant="${plantType}"]`);
     if (selectedCard) {
+        // 双保险：没在选择器的卡也跳过
+        if (selectedCard.classList.contains('picker-hidden')) return;
         selectedCard.classList.add('selected');
         selectedPlant = plantType;
     }
@@ -170,6 +88,10 @@ function backToMenu() {
     if (game) {
         game.backToMenu();
     }
+    // 回到菜单时清掉过滤
+    currentPickedPlants = null;
+    const cards = document.querySelectorAll('.plant-card');
+    cards.forEach(card => card.classList.remove('picker-hidden'));
 }
 
 function restartGame() {
@@ -179,22 +101,8 @@ function restartGame() {
         updateShovelUI();
         const cards = document.querySelectorAll('.plant-card');
         cards.forEach(card => card.classList.remove('selected'));
-        game.restartWithSelectedPlants();
+        game.restartGame();
     }
-}
-
-function updateBGMVolume(val) {
-    audioManager.setBGMVolume(val / 100);
-    document.getElementById('bgmVolumeValue').textContent = val + '%';
-    document.getElementById('pauseBGMVolumeValue').textContent = val + '%';
-    document.getElementById('pauseBGMVolume').value = val;
-}
-
-function updateSFXVolume(val) {
-    audioManager.setSFXVolume(val / 100);
-    document.getElementById('sfxVolumeValue').textContent = val + '%';
-    document.getElementById('pauseSFXVolumeValue').textContent = val + '%';
-    document.getElementById('pauseSFXVolume').value = val;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

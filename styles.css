@@ -75,55 +75,6 @@ body {
     background: linear-gradient(135deg, #67e8f9 0%, #22d3ee 100%);
 }
 
-.volume-controls {
-    margin-top: 30px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-.volume-control {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
-    max-width: 300px;
-}
-
-.volume-control label {
-    color: #fff;
-    font-size: 1.2rem;
-    min-width: 100px;
-    text-align: right;
-    white-space: nowrap;
-}
-
-.volume-control input[type="range"] {
-    flex: 1;
-    height: 8px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.3);
-    outline: none;
-    -webkit-appearance: none;
-}
-
-.volume-control input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #ffd700;
-    cursor: pointer;
-}
-
-.volume-control span {
-    color: #ffd700;
-    font-size: 1rem;
-    min-width: 50px;
-    text-align: left;
-}
-
 .rules-link {
     margin-top: 30px;
 }
@@ -140,170 +91,6 @@ body {
 
 .rules-link a:hover {
     background: rgba(255, 255, 255, 0.2);
-}
-
-#plant-select-screen {
-    text-align: center;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 40px;
-    border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-#plant-select-screen h1 {
-    color: #fff;
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-}
-
-#plant-select-screen p {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-}
-
-#available-plants {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 30px;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.plant-select-card {
-    width: 80px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    padding: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.plant-select-card:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 0.3);
-}
-
-.plant-select-card.selected {
-    border: 2px solid #ffd700;
-    background: rgba(255, 215, 0, 0.3);
-}
-
-.plant-select-card.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.plant-select-card.disabled:hover {
-    transform: scale(1);
-}
-
-.plant-select-card .plant-icon {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-    margin-bottom: 5px;
-}
-
-.plant-select-card .plant-cost {
-    color: #ffd700;
-    font-weight: bold;
-    font-size: 1rem;
-}
-
-#selected-plants-preview {
-    margin-bottom: 30px;
-}
-
-#selected-plants-preview h3 {
-    color: #fff;
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-}
-
-#selected-plants-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    justify-content: center;
-}
-
-.selected-plant-preview {
-    width: 70px;
-    height: 80px;
-    background: rgba(255, 215, 0, 0.3);
-    border-radius: 8px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.selected-plant-preview .plant-icon {
-    width: 40px;
-    height: 40px;
-    object-fit: contain;
-    margin-bottom: 3px;
-}
-
-.selected-plant-preview .plant-cost {
-    color: #ffd700;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.selected-plant-preview .remove-btn {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 20px;
-    height: 20px;
-    background: red;
-    border-radius: 50%;
-    color: white;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-#confirm-plant-btn {
-    padding: 15px 40px;
-    font-size: 1.5rem;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: rgba(255, 215, 0, 0.8);
-    color: #1a1a2e;
-    font-weight: bold;
-    margin-right: 15px;
-}
-
-#confirm-plant-btn:hover:not(:disabled) {
-    transform: scale(1.1);
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-}
-
-#confirm-plant-btn:disabled {
-    background: rgba(255, 255, 255, 0.3);
-    cursor: not-allowed;
 }
 
 #game-area {
@@ -335,8 +122,8 @@ body {
 }
 
 .sun-icon {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     animation: sunPulse 2s infinite;
 }
 
@@ -419,13 +206,6 @@ body {
     object-fit: contain;
 }
 
-.plant-card[data-plant="firePea"] .plant-icon {
-    width: 100px;
-    height: 100px;
-    margin: -25px auto;
-    display: block;
-}
-
 .plant-cost {
     font-size: 1.2rem;
     font-weight: bold;
@@ -448,6 +228,7 @@ body {
     position: relative;
     background: url('95版/images/background1.jpg') center/cover;
     overflow: hidden;
+    transition: filter 0.5s ease;
 }
 
 #lawn {
@@ -493,12 +274,6 @@ body {
     left: 0;
 }
 
-.plant-in-cell.fire-pea {
-    width: 120%;
-    height: 120%;
-    transform: translate(-10%, -10%);
-}
-
 .lawnmower-row {
     position: absolute;
     left: 0;
@@ -536,11 +311,12 @@ body {
 
 .zombie {
     position: absolute;
-    width: 140px;
-    height: 168px;
+    width: 100px;
+    height: 120px;
     z-index: 5;
     transition: left 0.1s linear;
-    pointer-events: none;
+    transform: scale(1.8);
+    transform-origin: bottom center;
 }
 
 .zombie img {
@@ -560,21 +336,18 @@ body {
 .projectile.pea {
     background: #22c55e;
     border-radius: 50%;
-    animation: peaPulse 0.2s ease-in-out infinite;
 }
 
 .projectile.icePea {
     background: #67e8f9;
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(103, 232, 249, 0.5);
-    animation: iceGlow 0.3s ease-in-out infinite;
 }
 
 .projectile.firePea {
     background: #ef4444;
     border-radius: 50%;
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
-    animation: fireGlow 0.2s ease-in-out infinite;
 }
 
 .projectile.melon {
@@ -582,30 +355,21 @@ body {
     border-radius: 50%;
     width: 30px;
     height: 30px;
-    animation: melonSpin 0.3s linear infinite;
 }
 
-@keyframes peaPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+.sun-item {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    z-index: 15;
+    animation: sunFall 5s ease-in forwards;
+    cursor: pointer;
 }
 
-@keyframes iceGlow {
-    0%, 100% { box-shadow: 0 0 10px rgba(103, 232, 249, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(103, 232, 249, 0.8); }
+@keyframes sunFall {
+    0% { transform: translateY(-100px); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
 }
-
-@keyframes fireGlow {
-    0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.8); }
-    50% { box-shadow: 0 0 25px rgba(239, 68, 68, 1); }
-}
-
-@keyframes melonSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-
 
 #game-over, #pause-overlay {
     position: absolute;
@@ -694,7 +458,6 @@ body {
     background: #fb923c;
     border-radius: 50% 0 50% 50%;
     animation: leafFall 10s linear infinite;
-    pointer-events: none;
 }
 
 @keyframes leafFall {
@@ -715,7 +478,6 @@ body {
     background: #fff;
     border-radius: 50%;
     animation: snowFall 8s linear infinite;
-    pointer-events: none;
 }
 
 @keyframes snowFall {
@@ -789,7 +551,6 @@ body {
     height: 20px;
     background: linear-gradient(to bottom, transparent, rgba(174, 194, 224, 0.8));
     animation: rainFall 0.5s linear infinite;
-    pointer-events: none;
 }
 
 @keyframes rainFall {
@@ -886,9 +647,9 @@ body {
 
 .sun-item {
     position: absolute;
-    width: 112px;
-    height: 112px;
-    z-index: 9999;
+    width: 100px;
+    height: 100px;
+    z-index: 15;
     cursor: pointer;
     transition: transform 0.2s ease;
 }
@@ -970,4 +731,218 @@ body {
     background: #FF6347;
     border-color: #FF4500;
     box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+}
+/* ============================================
+   选植物界面（plant-picker）样式
+   ============================================ */
+
+#plant-picker-screen {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 30px 40px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    max-width: 1100px;
+    width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: #fff;
+}
+
+#plant-picker-screen h2 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.picker-hint {
+    color: rgba(255, 255, 255, 0.75);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+#picker-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.picker-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 12px;
+    padding: 10px 6px 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease, opacity 0.2s ease;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.picker-card:hover:not(.disabled) {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+.picker-card.selected {
+    background: rgba(255, 215, 0, 0.25);
+    border-color: #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.picker-card.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    filter: grayscale(0.7);
+}
+
+.picker-icon {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.picker-name {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.picker-cost {
+    position: absolute;
+    top: 4px;
+    left: 6px;
+    font-size: 0.8rem;
+    color: #FFD700;
+    font-weight: 700;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+.picker-checkmark {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    background: #2ecc71;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 0 6px rgba(46, 204, 113, 0.6);
+}
+
+.picker-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.picker-counter {
+    font-size: 1.1rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.picker-counter #picker-count {
+    color: #FFD700;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.picker-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.picker-btn {
+    padding: 10px 22px;
+    font-size: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 25px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.picker-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.picker-btn.primary {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-color: #27ae60;
+    color: #fff;
+}
+
+.picker-btn.primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #27ae60, #1e8449);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+}
+
+.picker-btn.primary:disabled {
+    background: rgba(120, 120, 120, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+}
+
+.picker-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.picker-hint.flash {
+    animation: pickerFlash 0.5s ease;
+}
+
+@keyframes pickerFlash {
+    0%   { color: #fff; }
+    50%  { color: #ff5252; font-weight: 700; }
+    100% { color: rgba(255, 255, 255, 0.75); }
+}
+
+/* 游戏内选植物栏中被隐藏的卡 */
+.plant-card.picker-hidden {
+    display: none;
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+    #picker-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    #picker-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    #plant-picker-screen {
+        padding: 20px;
+    }
+    #plant-picker-screen h2 {
+        font-size: 1.6rem;
+    }
 }

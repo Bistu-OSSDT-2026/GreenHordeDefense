@@ -6,13 +6,17 @@ class AudioManager {
         this.bgmVolume = 0.3;
         this.sfxVolume = 0.5;
         this.masterGain = null;
+        // 静音状态:从 localStorage 恢复,默认 false(不静音)
+        this.isMuted = localStorage.getItem('pvz_muted') === '1';
+        // 记录静音前的 BGM 状态,用于取消静音时恢复
+        this.bgmShouldPlay = false;
     }
 
     init() {
         if (!this.audioContext) {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             this.masterGain = this.audioContext.createGain();
-            this.masterGain.gain.value = 1;
+            this.masterGain.gain.value = this.isMuted ? 0 : 1;
             this.masterGain.connect(this.audioContext.destination);
         }
         if (this.audioContext.state === 'suspended') {
@@ -29,6 +33,42 @@ class AudioManager {
 
     setSFXVolume(volume) {
         this.sfxVolume = Math.min(1, Math.max(0, volume));
+    }
+
+    setMuted(muted) {
+        this.isMuted = !!muted;
+        localStorage.setItem('pvz_muted', this.isMuted ? '1' : '0');
+
+        // masterGain 还没初始化(用户还没开始游戏)时,只记状态即可
+        if (this.masterGain) {
+            this.masterGain.gain.value = this.isMuted ? 0 : 1;
+        }
+
+        // BGM 是独立 Audio 元素,需要单独控制
+        if (this.bgmAudio) {
+            if (this.isMuted) {
+                if (this.bgmPlaying) {
+                    this.bgmShouldPlay = true;
+                    this.bgmAudio.pause();
+                    this.bgmPlaying = false;
+                }
+            } else {
+                if (this.bgmShouldPlay && this.bgmAudio.paused) {
+                    this.bgmAudio.play().catch(e => console.log('BGM resume error:', e));
+                    this.bgmPlaying = true;
+                    this.bgmShouldPlay = false;
+                }
+            }
+        }
+    }
+
+    toggleMute() {
+        this.setMuted(!this.isMuted);
+        return this.isMuted;
+    }
+
+    getMuteState() {
+        return this.isMuted;
     }
 
     playClick() {
@@ -282,12 +322,19 @@ class AudioManager {
 
     startBGM() {
         this.stopBGM();
-        
+
         this.bgmAudio = new Audio('95版/伟伟迷套的bgm/lawnbgm(1).mp3');
         this.bgmAudio.volume = this.bgmVolume;
         this.bgmAudio.loop = true;
+
+        // 如果当前是静音状态,只创建对象但不播放
+        if (this.isMuted) {
+            this.bgmPlaying = false;
+            this.bgmShouldPlay = true;
+            return;
+        }
+
         this.bgmAudio.play().catch(e => console.log('BGM play error:', e));
-        
         this.bgmPlaying = true;
     }
 

@@ -495,7 +495,8 @@ class Game {
                     if (element) element.remove();
                 }
             }
-            
+            this.updateWaveProgressBar();
+
             setTimeout(() => {
                 if (lawnmower) lawnmower.remove();
             }, 3000);

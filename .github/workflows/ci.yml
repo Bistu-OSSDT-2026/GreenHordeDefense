@@ -45,6 +45,7 @@ jobs:
       - name: 项目基础构建验证
         run: |
           echo "验证项目文件结构完整性..."
+          errors=0
           required_files=("index.html" "styles.css" "game.js" "plants.js" "zombies.js" "levels.js" "audio.js" "main.js")
           for file in "${required_files[@]}"; do
             if [ -f "$file" ]; then

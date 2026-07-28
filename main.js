@@ -197,6 +197,20 @@ function updateSFXVolume(val) {
     document.getElementById('pauseSFXVolume').value = val;
 }
 
+function toggleMute() {
+    const muted = audioManager.toggleMute();
+    updateMuteButton(muted);
+    return muted;
+}
+
+function updateMuteButton(muted) {
+    const btn = document.getElementById('mute-btn');
+    if (!btn) return;
+    btn.textContent = muted ? '🔇' : '🔊';
+    btn.classList.toggle('muted', muted);
+    btn.title = muted ? '取消静音 (M键)' : '静音 (M键)';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const lawnContainer = document.getElementById('lawn-container');
     
@@ -206,29 +220,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // 页面加载时根据 audioManager 状态同步按钮显示
+    updateMuteButton(audioManager.getMuteState());
+
     document.addEventListener('keydown', (e) => {
+        const tag = (e.target && e.target.tagName) || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
         const key = e.key.toLowerCase();
         const isGameActive = game && (game.state === GAME_STATES.PLAYING || game.state === GAME_STATES.PAUSED);
-        
+
+        // M 键静音/取消静音（全局）
+        if (key === 'm') {
+            e.preventDefault();
+            toggleMute();
+            return;
+        }
+
         if (!isGameActive) return;
-        
+
         if (key === 'escape' || key === 'p') {
             e.preventDefault();
             togglePause();
             return;
         }
-        
+
         if (key === 's' && game.state === GAME_STATES.PLAYING) {
             e.preventDefault();
             toggleShovel();
             return;
         }
-        
+
         const slot = Number(key);
         if (game.state === GAME_STATES.PLAYING && slot >= 1 && slot <= 6) {
             const cards = document.querySelectorAll('#plant-selector .plant-card');
             const card = cards[slot - 1];
-            
+
             if (card) {
                 e.preventDefault();
                 selectPlant(card.dataset.plant);
@@ -238,6 +265,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function playSound(soundName) {
+    if (audioManager.getMuteState()) return;
     const audio = new Audio(`95版/sounds/${soundName}.ogg`);
     audio.volume = 0.3;
     audio.play().catch(() => {});

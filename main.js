@@ -213,7 +213,7 @@ function updateMuteButton(muted) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const lawnContainer = document.getElementById('lawn-container');
-
+    
     lawnContainer.addEventListener('click', (e) => {
         if (e.target.classList.contains('sun-item')) {
             e.stopPropagation();
@@ -224,20 +224,47 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMuteButton(audioManager.getMuteState());
 
     document.addEventListener('keydown', (e) => {
-        // 避免在输入框里按 M 也触发静音
         const tag = (e.target && e.target.tagName) || '';
         if (tag === 'INPUT' || tag === 'TEXTAREA') return;
 
-        if (e.key === 'Escape') {
-            togglePause();
-        } else if (e.key === 'm' || e.key === 'M') {
+        const key = e.key.toLowerCase();
+        const isGameActive = game && (game.state === GAME_STATES.PLAYING || game.state === GAME_STATES.PAUSED);
+
+        // M 键静音/取消静音（全局）
+        if (key === 'm') {
+            e.preventDefault();
             toggleMute();
+            return;
+        }
+
+        if (!isGameActive) return;
+
+        if (key === 'escape' || key === 'p') {
+            e.preventDefault();
+            togglePause();
+            return;
+        }
+
+        if (key === 's' && game.state === GAME_STATES.PLAYING) {
+            e.preventDefault();
+            toggleShovel();
+            return;
+        }
+
+        const slot = Number(key);
+        if (game.state === GAME_STATES.PLAYING && slot >= 1 && slot <= 6) {
+            const cards = document.querySelectorAll('#plant-selector .plant-card');
+            const card = cards[slot - 1];
+
+            if (card) {
+                e.preventDefault();
+                selectPlant(card.dataset.plant);
+            }
         }
     });
 });
 
 function playSound(soundName) {
-    // 静音时直接跳过,避免创建无意义的 Audio 对象
     if (audioManager.getMuteState()) return;
     const audio = new Audio(`95版/sounds/${soundName}.ogg`);
     audio.volume = 0.3;

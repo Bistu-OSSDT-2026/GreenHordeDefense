@@ -53,6 +53,10 @@
                     <img src="图片和动画素材/双发射手.gif" class="plant-icon">
                     <span class="plant-cost">200</span>
                 </div>
+                <div class="plant-select-card" data-plant="threepeater" onclick="togglePlantSelection('threepeater')">
+                    <img src="assets/plants/threepeater.gif" class="plant-icon">
+                    <span class="plant-cost">325</span>
+                </div>
                 <div class="plant-select-card" data-plant="firePea" onclick="togglePlantSelection('firePea')">
                     <img src="图片和动画素材/火焰豌豆射手.gif" class="plant-icon">
                     <span class="plant-cost">175</span>
@@ -89,6 +93,10 @@
                     <img src="95版/reanim/PuffShroom_head.png" class="plant-icon">
                     <span class="plant-cost">0</span>
                 </div>
+                <div class="plant-select-card" data-plant="gloomShroom" onclick="togglePlantSelection('gloomShroom')">
+                    <img src="assets/plants/gloomShroom.gif" class="plant-icon">
+                    <span class="plant-cost">150</span>
+                </div>
                 <div class="plant-select-card" data-plant="iceShroom" onclick="togglePlantSelection('iceShroom')">
                     <img src="95版/reanim/IceShroom_body.png" class="plant-icon">
                     <span class="plant-cost">75</span>
@@ -112,13 +120,20 @@
                     <span>波次: </span>
                     <span id="wave-count">1/4</span>
                 </div>
+                <div class="score-info">
+                    <span>Score: </span>
+                    <span id="score-count">0</span>
+                </div>
+                <div class="zombie-info">
+                    <span>Zombies: </span>
+                    <span id="zombie-count">0</span>
+                </div>
                 <div class="season-info" id="season-info">
                     春天
                 </div>
                 <button id="shovel-btn" onclick="toggleShovel()">
                     <img src="95版/images/Shovel.png" style="width:30px;height:30px;">
                 </button>
-                <button id="mute-btn" class="mute-btn" onclick="toggleMute()" title="静音 (M键)">🔊</button>
                 <button id="pause-btn" onclick="togglePause()">暂停</button>
                 <button onclick="restartGame()">重新开始</button>
             </div>
@@ -143,6 +158,11 @@
                     <img src="图片和动画素材/双发射手.gif" class="plant-icon">
                     <span class="plant-cost">200</span>
                     <div class="plant-cooldown" id="cd-doublePea"></div>
+                </div>
+                <div class="plant-card" data-plant="threepeater" onclick="selectPlant('threepeater')">
+                    <img src="assets/plants/threepeater.gif" class="plant-icon">
+                    <span class="plant-cost">325</span>
+                    <div class="plant-cooldown" id="cd-threepeater"></div>
                 </div>
                 <div class="plant-card" data-plant="firePea" onclick="selectPlant('firePea')">
                     <img src="图片和动画素材/火焰豌豆射手.gif" class="plant-icon">
@@ -188,6 +208,11 @@
                     <img src="95版/reanim/PuffShroom_head.png" class="plant-icon">
                     <span class="plant-cost">0</span>
                     <div class="plant-cooldown" id="cd-puffShroom"></div>
+                </div>
+                <div class="plant-card" data-plant="gloomShroom" onclick="selectPlant('gloomShroom')">
+                    <img src="assets/plants/gloomShroom.gif" class="plant-icon">
+                    <span class="plant-cost">150</span>
+                    <div class="plant-cooldown" id="cd-gloomShroom"></div>
                 </div>
                 <div class="plant-card" data-plant="iceShroom" onclick="selectPlant('iceShroom')">
                     <img src="95版/reanim/IceShroom_body.png" class="plant-icon">

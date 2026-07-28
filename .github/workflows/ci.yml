@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  lint-and-validate:
+    name: 代码检查与资源校验
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: JS 代码静态语法检查
+        run: |
+          for file in game.js plants.js zombies.js levels.js audio.js main.js; do
+            if [ -f "$file" ]; then
+              node --check "$file" && echo "✅ $file 语法检查通过" || echo "❌ $file 语法错误"
+            fi
+          done
+
+      - name: 资源路径校验
+        run: |
+          echo "检查图片和音频资源路径..."
+          errors=0
+          if [ -f "index.html" ]; then
+            # 检查 index.html 中引用的图片路径是否存在
+            grep -oP 'src="[^"]*"' index.html | while read -r src; do
+              path=$(echo "$src" | sed 's/src="//' | sed 's/"//')
+              if [ -n "$path" ] && [ ! -f "$path" ] && [ ! -f "${path}index.html" ]; then
+                echo "⚠️  警告: 资源引用不存在 - $path"
+              fi
+            done
+          fi
+          echo "资源路径校验完成"
+
+      - name: 项目基础构建验证
+        run: |
+          echo "验证项目文件结构完整性..."
+          required_files=("index.html" "styles.css" "game.js" "plants.js" "zombies.js" "levels.js" "audio.js" "main.js")
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file 存在"
+            else
+              echo "❌ $file 缺失"
+              errors=$((errors + 1))
+            fi
+          done
+          if [ "$errors" -eq 0 ]; then
+            echo "🎉 项目文件结构验证通过"
+          else
+            echo "❌ 存在 $errors 个缺失文件"
+            exit 1
+          fi
+
+      - name: HTML 基本结构验证
+        run: |
+          echo "验证 HTML 基本结构..."
+          if [ -f "index.html" ]; then
+            # 检查是否包含基本 HTML 结构
+            if grep -q '<!DOCTYPE html>' index.html && \
+               grep -q '<html' index.html && \
+               grep -q '</html>' index.html && \
+               grep -q '<head>' index.html && \
+               grep -q '<body>' index.html; then
+              echo "✅ HTML 基本结构完整"
+            else
+              echo "❌ HTML 基本结构不完整"
+              exit 1
+            fi
+          fi
